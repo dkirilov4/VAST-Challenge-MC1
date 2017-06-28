@@ -3,6 +3,11 @@ body
   background: #171717;
 }
 
+.canvas
+{
+  position: absolute;
+}
+
 svg
 {
     background: transparent;

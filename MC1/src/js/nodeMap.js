@@ -278,7 +278,7 @@ var NodeMap = function ()
             }
 
             self.createCanvas();
-            self.createNodeMap();
+            //self.createNodeMap();
 
             d3.select("body").append("svg")
                 .attr("class", "bargraph")
