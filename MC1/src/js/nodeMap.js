@@ -41,7 +41,7 @@ var NodeMap = function ()
         function loaded() {
             context.globalAlpha = 0.2;
             context.scale(.621, .621);
-            context.drawImage(this, 0, 0);
+            context.drawImage(this, 0, 30);
         }
 
 
@@ -56,7 +56,6 @@ var NodeMap = function ()
     {
         var nodeMap = svg.append("g")
             .attr("class", "nodeMap")
-            .attr("transform", "translate(0, -20)")
             .selectAll(".cell")
             .data(nodeData.nodes)
             .enter()
@@ -234,51 +233,51 @@ var NodeMap = function ()
 
             nodeData = {
             "nodes": [
-                {"id": "entrance0", "x": 193, "y": 43},
-                {"id": "entrance1", "x": 57, "y": 205},
-                {"id": "entrance2", "x": 558, "y": 268},
-                {"id": "entrance3", "x": 353, "y": 509},
-                {"id": "entrance4", "x": 429, "y": 561},
-                {"id": "general-gate0", "x": 339, "y": 27},
-                {"id": "general-gate1", "x": 198, "y": 79},
-                {"id": "general-gate2", "x": 321, "y": 101},
-                {"id": "general-gate3", "x": 566, "y": 171},
-                {"id": "general-gate4", "x": 214, "y": 302},
-                {"id": "general-gate5", "x": 381, "y": 338},
-                {"id": "general-gate6", "x": 415, "y": 420},
-                {"id": "general-gate7", "x": 202, "y": 441},
-                {"id": "ranger-stop0", "x": 272, "y": 53},
-                {"id": "ranger-stop1", "x": 64, "y": 79},
-                {"id": "ranger-stop2", "x": 248, "y": 106},
-                {"id": "ranger-stop3", "x": 453, "y": 142},
-                {"id": "ranger-stop4", "x": 60, "y": 294},
-                {"id": "ranger-stop5", "x": 462, "y": 362},
-                {"id": "ranger-stop6", "x": 373, "y": 453},
-                {"id": "ranger-stop7", "x": 306, "y": 455},
-                {"id": "camping0", "x": 163, "y": 130},
-                {"id": "camping1", "x": 396, "y": 157},
-                {"id": "camping2", "x": 137, "y": 196},
-                {"id": "camping3", "x": 143, "y": 214},
-                {"id": "camping4", "x": 151, "y": 276},
-                {"id": "camping5", "x": 68, "y": 370},
-                {"id": "camping6", "x": 457, "y": 540},
-                {"id": "camping7", "x": 553, "y": 443},
-                {"id": "camping8", "x": 560, "y": 152},
-                {"id": "gate0", "x": 195, "y": 103},
-                {"id": "gate1", "x": 180, "y": 139},
-                {"id": "gate2", "x": 91, "y": 167},
-                {"id": "gate3", "x": 455, "y": 188},
-                {"id": "gate4", "x": 502, "y": 350},
-                {"id": "gate5", "x": 400, "y": 445},
-                {"id": "gate6", "x": 356, "y": 463},
-                {"id": "gate7", "x": 298, "y": 489},
-                {"id": "gate8", "x": 423, "y": 551},
-                {"id": "ranger-base", "x": 394, "y": 535}
+                {"id": "entrance0", "x": 193, "y": 33},
+                {"id": "entrance1", "x": 57, "y": 195},
+                {"id": "entrance2", "x": 558, "y": 258},
+                {"id": "entrance3", "x": 353, "y": 499},
+                {"id": "entrance4", "x": 429, "y": 551},
+                {"id": "general-gate0", "x": 339, "y": 17},
+                {"id": "general-gate1", "x": 198, "y": 69},
+                {"id": "general-gate2", "x": 321, "y": 91},
+                {"id": "general-gate3", "x": 566, "y": 161},
+                {"id": "general-gate4", "x": 214, "y": 292},
+                {"id": "general-gate5", "x": 381, "y": 328},
+                {"id": "general-gate6", "x": 415, "y": 410},
+                {"id": "general-gate7", "x": 202, "y": 431},
+                {"id": "ranger-stop0", "x": 272, "y": 43},
+                {"id": "ranger-stop1", "x": 64, "y": 69},
+                {"id": "ranger-stop2", "x": 248, "y": 96},
+                {"id": "ranger-stop3", "x": 453, "y": 132},
+                {"id": "ranger-stop4", "x": 60, "y": 284},
+                {"id": "ranger-stop5", "x": 462, "y": 352},
+                {"id": "ranger-stop6", "x": 373, "y": 443},
+                {"id": "ranger-stop7", "x": 306, "y": 445},
+                {"id": "camping0", "x": 163, "y": 120},
+                {"id": "camping1", "x": 396, "y": 147},
+                {"id": "camping2", "x": 137, "y": 186},
+                {"id": "camping3", "x": 143, "y": 204},
+                {"id": "camping4", "x": 151, "y": 266},
+                {"id": "camping5", "x": 68, "y": 360},
+                {"id": "camping6", "x": 457, "y": 530},
+                {"id": "camping7", "x": 553, "y": 433},
+                {"id": "camping8", "x": 560, "y": 142},
+                {"id": "gate0", "x": 195, "y": 93},
+                {"id": "gate1", "x": 180, "y": 129},
+                {"id": "gate2", "x": 91, "y": 157},
+                {"id": "gate3", "x": 455, "y": 178},
+                {"id": "gate4", "x": 502, "y": 340},
+                {"id": "gate5", "x": 400, "y": 435},
+                {"id": "gate6", "x": 356, "y": 453},
+                {"id": "gate7", "x": 298, "y": 479},
+                {"id": "gate8", "x": 423, "y": 541},
+                {"id": "ranger-base", "x": 394, "y": 525}
             ]
             }
 
             self.createCanvas();
-            //self.createNodeMap();
+            self.createNodeMap();
 
             d3.select("body").append("svg")
                 .attr("class", "bargraph")
