@@ -1,0 +1,51 @@
+body 
+{ 
+  background: #171717;
+}
+
+svg
+{
+    background: transparent;
+    font-family: helvetica, sans-serif;
+}
+
+.bargraph{
+  background: white;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.cell {
+  stroke: white;
+  stroke-width: 3px;
+  opacity: 0.7;
+  stroke-opacity: 1;
+}
+
+.cell:hover {
+  /*fill: red !important;*/
+  opacity: 1;
+  stroke-width: 5;
+  stroke: red;
+}
+
+.bin:hover
+{
+  fill: red !important;
+
+  /*fill: none;
+  stroke:black;
+  stroke-width: 0.5px;*/
+}
+
+.node {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-width: 1.5px;
+}
