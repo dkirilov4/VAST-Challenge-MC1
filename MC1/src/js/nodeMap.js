@@ -15,6 +15,8 @@ var NodeMap = function ()
 
     var dailyData = [];     // Format: {}
     
+    var gateNames = [];
+
     var gateData = [];
 
     var nodeData = [];
@@ -124,34 +126,79 @@ var NodeMap = function ()
 
 
     var width = 400;
-    var height = 600;
+    var height = 400;
     function handleMouseOver(d)
     {
-        var carTypes = ["1", "2", "3", "4", "5", "6", "2P"];
+        // 1  - 2 Axle Car or Motorcycle
+        // 2  - 2 Axle Truck
+        // 3  - 3 Axle Truck
+        // 4  - 4 Axle Truck
+        // 5  - 2 Axle Bus
+        // 6  - 3 Axle Bus
+        // 2P - Park Preserve Vehices 
+        var carTypes = ["2 Axle Car or Motorcycle", "2 Axle Truck", "3 Axle Truck", "4 Axle Truck", "2 Axle Bus", "3 Axle Bus", "Park Preserve Vehices"];
+        var carTypeCounts = [0, 0, 0, 0, 0, 0, 0];
+
+        for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++)
+        {
+            if (d.id == dailyData[sliderValue].SensorData[i].Gate)
+            {
+                for (var j = 0; j < dailyData[sliderValue].SensorData[i].CarTypes.length; j++)
+                {
+                    if (dailyData[sliderValue].SensorData[i].CarTypes[j] == "1")
+                        carTypeCounts[0]++;
+                    else if (dailyData[sliderValue].SensorData[i].CarTypes[j] == "2")
+                        carTypeCounts[1]++;
+                    else if (dailyData[sliderValue].SensorData[i].CarTypes[j] == "3")
+                        carTypeCounts[2]++;
+                    else if (dailyData[sliderValue].SensorData[i].CarTypes[j] == "4")
+                        carTypeCounts[3]++;
+                    else if (dailyData[sliderValue].SensorData[i].CarTypes[j] == "5")
+                        carTypeCounts[4]++;
+                    else if (dailyData[sliderValue].SensorData[i].CarTypes[j] == "6")
+                        carTypeCounts[5]++;
+                    else
+                        carTypeCounts[6]++;
+                }
+            }
+        }
+
+        d3.selectAll(".bar").remove();
+
+        var barHeight = 50;
 
         d3.select(".bargraph").selectAll(".bar")
-                .data(nodeData.nodes)
+                .data(carTypeCounts)
                 .enter()
                 .append("rect")
                     .attr("class", "bar")
-                    .attr("x", function(d) { return 5;})
-                    .attr("y", function(d) 
+                    .attr("x", 2)
+                    .attr("y", function(d, i) 
                     { 
-                        // TODO
+                        if (i == 0)
+                            return 2;
+                        return (i * (barHeight + 2) + 2);
                     })
-                    .attr("width", function(d)
+                    .attr("height", barHeight)
+                    .attr("width", function (d)
                     {
-                        for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++)
-                        {
-                            if (d.id == dailyData[sliderValue].SensorData[i].Gate)
-                            {
-                                return dailyData[sliderValue].SensorData[i].CarTypes.length;
-
-                            }
-                        }
+                        return d * 20;
                     })
-                    .attr("height", 13)
                     .attr("fill", "steelblue")
+                    .append("title")
+                        .text(function(d, i)
+                        {
+                            return (carTypes[i] + ": " + d);
+                        })
+
+        d3.selectAll(".bar").append("text")
+            .attr("class", "value")
+            .attr("y", barHeight / 2)
+            .attr("dx", 50)
+            .attr("dy", ".35em")
+            .attr("text-anchor", "end")
+            .text("10")
+            .attr("x", 50);
     }
 
 
@@ -225,10 +272,11 @@ var NodeMap = function ()
     //
     var publiclyAvailable = 
     {
-        createNodeMap: function(rData, dData, gData)
+        createNodeMap: function(rData, dData, gNames, gData)
         {
             rawData = rData;
             dailyData = dData;
+            gateNames = gNames;
             gateData = gData;
 
             nodeData = {
@@ -279,11 +327,17 @@ var NodeMap = function ()
             self.createCanvas();
             self.createNodeMap();
 
+            var x = d3.scaleLinear().range([0, width]);   
+
             d3.select("body").append("svg")
                 .attr("class", "bargraph")
                 .attr("width", width)
                 .attr("height", height)
                 .attr("transform", "translate(620, -2000)")
+                // .append("g")
+                //     .attr("transform", "translate(0," + 10 + ")")
+                //     .call(d3.axisBottom(x))
+                //     .attr("fill", "white");
         },
     };
 

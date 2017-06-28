@@ -13,6 +13,11 @@ svg
   background: white;
 }
 
+text.value {
+        font-size: 120%;
+        fill: white;
+    }
+
 .bar:hover {
   fill: brown;
 }

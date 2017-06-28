@@ -17,6 +17,8 @@ var DataLoader = function()
     
     var gateNames = [];
 
+    var gateData = [];
+
 
     //
     /* Visualizations */
@@ -41,7 +43,7 @@ var DataLoader = function()
     self.createNodeMap = function()
     {
         var nodeMap = new NodeMap();
-        nodeMap.createNodeMap(rawData, dailyData, gateNames);
+        nodeMap.createNodeMap(rawData, dailyData, gateNames, gateData);
     }
 
 
@@ -69,6 +71,7 @@ var DataLoader = function()
         .get(function()
         {
             self.loadDailyData();
+            self.loadGateData();
             self.createVis();
             console.log(">> Data Loaded!");
         })
@@ -136,7 +139,29 @@ var DataLoader = function()
 
     self.loadGateData = function()
     {
+        var emptyGates = [];
 
+        for (var i = 0; i < gateNames.length; i++)
+            emptyGates[gateNames[i]] = {DailyData: {}}
+
+        for (var i = 0; i < rawData.length; i++)
+        {
+            var dateFormat = d3.timeFormat("%x"); // formats timestamp to: mm/dd/yyyy
+            var curDate = dateFormat(new Date(rawData[i].Timestamp));
+
+            if (!emptyGates[rawData[i].GateName].DailyData[curDate]) {
+                emptyGates[rawData[i].GateName].DailyData[curDate] = [];
+                emptyGates[rawData[i].GateName].DailyData[curDate].push({CarID: rawData[i].CarID, CarType: rawData[i].CarType})
+            }
+            else
+            {
+                emptyGates[rawData[i].GateName].DailyData[curDate].push({CarID: rawData[i].CarID, CarType: rawData[i].CarType})
+            }
+        }
+
+        gateData = emptyGates;
+        console.log(Object.keys(gateData).length)
+        // console.log(gateData["entrance3"]);
     }
 
 
