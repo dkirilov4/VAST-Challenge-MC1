@@ -15,7 +15,7 @@ svg
 
 text.value {
         font-size: 120%;
-        fill: white;
+        fill: red;
     }
 
 .bar:hover {

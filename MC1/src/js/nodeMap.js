@@ -167,7 +167,7 @@ var NodeMap = function ()
 
         var barHeight = 50;
 
-        d3.select(".bargraph").selectAll(".bar")
+        var bar = d3.select(".bargraph").selectAll(".bar")
                 .data(carTypeCounts)
                 .enter()
                 .append("rect")
@@ -189,16 +189,24 @@ var NodeMap = function ()
                         .text(function(d, i)
                         {
                             return (carTypes[i] + ": " + d);
-                        })
+                        });
 
-        d3.selectAll(".bar").append("text")
-            .attr("class", "value")
-            .attr("y", barHeight / 2)
-            .attr("dx", 50)
-            .attr("dy", ".35em")
-            .attr("text-anchor", "end")
-            .text("10")
-            .attr("x", 50);
+        // var svgContainer = d3.select(".bargraph")
+        //     .data(carTypeCounts)
+        //     .enter()
+        //     .append("text")
+        //     .attr("class", "value")
+        //     .attr("x", function(d) { return d * 20})
+        //     .attr("y", function(d, i) 
+        //             { 
+        //                 if (i == 0)
+        //                     return 2;
+        //                 return (i * (barHeight + 2) + 2);
+        //             })
+        //     .text("ASDASDASD")
+
+    
+
     }
 
 
