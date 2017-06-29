@@ -8,6 +8,7 @@
 
     <!-- CSS Source -->
     <link rel = "stylesheet" href = "./src/css/main.css" />
+    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 
     <!-- JS Libraries -->
     <script src = "https://code.jquery.com/jquery-2.2.4.min.js"></script>
@@ -21,13 +22,28 @@
     <script src = "./src/js/heatMap.js"></script>
     <script src = "./src/js/nodeMap.js"></script>
 
-    <canvas width = "1000" height = "1000"></canvas>.
 
 </head>
 
 <body onload = "App.start();">
 
-    <input type="range" id="rangeslider" value="0" min="0" max="380" step="1">
+<div class = "title">
+    <center><h3>VAST Mini Challenge 1</h3></center>
+    <!--<input type="range" id="rangeslider" value="0" min="0" max="380" step="1">-->
+</div>
+
+<div class = "container-fluid">
+    <div class = "row">
+        <div class = "heatMapDiv col-md-12">
+            <h3>Heat Map</h3>
+            <!--<canvas width = "1000" height = "1000"></canvas>-->
+        </div>
+        <!--<div class = "col-md-4">
+            <h3>Bar Chart</h3>
+        </div>-->
+    </div>
+</div>
+
 
 </body>
 

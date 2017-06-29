@@ -1,6 +1,7 @@
 body 
 { 
   background: #171717;
+  color: lightgrey;
 }
 
 svg
@@ -9,14 +10,11 @@ svg
     font-family: helvetica, sans-serif;
 }
 
+
+
 .bargraph{
   background: white;
 }
-
-text.value {
-        font-size: 120%;
-        fill: red;
-    }
 
 .bar:hover {
   fill: brown;

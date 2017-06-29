@@ -26,8 +26,8 @@ var DataLoader = function()
 
     self.createVis = function()
     {
-        //self.createHeatMap();
-        self.createNodeMap();
+        self.createHeatMap();
+        //self.createNodeMap();
     }
 
     //
@@ -73,7 +73,6 @@ var DataLoader = function()
             self.loadDailyData();
             self.loadGateData();
             self.createVis();
-            console.log(">> Data Loaded!");
         })
     };
 
