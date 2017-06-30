@@ -1,7 +1,7 @@
 body 
 { 
-  background: #171717;
-  color: lightgrey;
+  background: #171717 !important;
+  color: lightgrey !important;
 }
 
 svg
@@ -36,11 +36,10 @@ svg
 
 .bin:hover
 {
-  fill: red !important;
+  /*fill: red !important;*/
 
-  /*fill: none;
-  stroke:black;
-  stroke-width: 0.5px;*/
+  stroke:red;
+  stroke-width: 2px;
 }
 
 .node {

@@ -26,6 +26,7 @@ var DataLoader = function()
 
     self.createVis = function()
     {
+        console.log(dailyData[0])
         self.createHeatMap();
         //self.createNodeMap();
     }
@@ -91,6 +92,7 @@ var DataLoader = function()
     self.loadDailyData = function()
     {
         // Daily Data:
+        var curDay = 1;
         var dateExists = false;
         for (var i = 0; i < rawData.length; i++)
         {
@@ -101,7 +103,7 @@ var DataLoader = function()
             // Push first element of Raw Data
             if (dailyData.length == 0) {
                 var emptyGates = createEmptyGatesArray();
-                dailyData.push({ Date: curDate, SensorData: emptyGates });
+                dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates });
                 dateExists = true;
             }
 
@@ -128,8 +130,9 @@ var DataLoader = function()
             // If date isn't in the dailyData array, add it
             if (!dateExists) 
             {
+                curDay++;
                 var emptyGates = createEmptyGatesArray();
-                dailyData.push({ Date: curDate, SensorData: emptyGates });
+                dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates });
             }
 
             dateExists = false;

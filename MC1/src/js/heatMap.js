@@ -88,29 +88,10 @@ var HeatMap = function()
 
     var getBinColor = function(d)
     {
-        var formatDate = d3.timeFormat("%x"); // Format: "5/1/2015"
-
-        var thisTimestamp = formatDate(new Date(d.Timestamp)); 
-        var thisGate = d.GateName;
-
-        var dayTimestamp = thisTimestamp;
-
-        for (var i = 0; i < dailyData.length; i++)
-        {
-            if (thisTimestamp == dailyData[i].Date)
-            {
-                for (var j = 0; j < dailyData[i].SensorData.length; j++)
-                {
-                    if (thisGate == dailyData[i].SensorData[j].Gate)
-                    {
-                        if (dailyData[i].SensorData[j].NumReadings == 0)
-                            return "white"
-                        else
-                            return colorScale(dailyData[i].SensorData[j].NumReadings);
-                    }
-                }
-            }
-        }
+        if (d.NumReadings == 0)
+            return "white"
+        else
+            return colorScale(d.NumReadings);
     }
 
     self.createHeatMap = function()
@@ -120,9 +101,13 @@ var HeatMap = function()
         var minEntries = getMinEntries();
         var maxEntries = getMaxEntries();
 
+        // colorScale = d3.scaleLinear()
+        //         .domain([minEntries, maxEntries * (1/3), maxEntries * (2/3), maxEntries])
+        //         .range(["#9cffaa", "#00ff0d", "#fbff14", "#cf0000"]);
+
         colorScale = d3.scaleLinear()
                 .domain([minEntries, maxEntries * (1/3), maxEntries * (2/3), maxEntries])
-                .range(["#9cffaa", "#00ff0d", "#fbff14", "#cf0000"]);
+                .range(["#ffeb3b", "#ff8b33", "#ff3e29", "#80126F"]);
 
         console.log("Here!");
 
@@ -134,19 +119,25 @@ var HeatMap = function()
                                 .attr("class", "heatMap")
                                 .attr("transform", "translate(" + margin.right + "," + margin.top + ")");
 
-        var heatMap = gContainer.selectAll(".bin")
-                            .data(rawData).enter()
-                            .append("rect")
-                            .attr("class", "bin")
-                            .attr("x", function(d) { return getDayNumber(d) * cellSize; })
-                            .attr("y", function(d) { return gateData.indexOf(d.GateName) * cellSize; })
-                            .attr("width", cellSize)
-                            .attr("height", cellSize)
-                            .attr("fill", function(d) { return getBinColor(d); });
-
-        var binTitles = heatMap.data(rawData).enter()
-                            .append("title")
-                            .text(function(d) { return ("Timestamp: " + d.Timestamp + "\nGate: " + d.GateName + "\nCarID: " + d.CarID + "\nCarType: " + d.CarType ); })
+        var heatMap = gContainer.selectAll(".dayGroup")
+                            .data(dailyData).enter()
+                            .append("g")
+                            .attr("class", "dayGroup")
+                            .attr("transform", function(d) {return "translate(" + cellSize * d.Day + ", 0)"})
+                            .each(function(d)
+                            {
+                                d3.select(this).selectAll(".bin")
+                                    .data(d.SensorData)
+                                    .enter()
+                                    .append("rect")
+                                    .attr("class", "bin")
+                                    .attr("transform", function(d) {return "translate(0, " + gateData.indexOf(d.Gate) * cellSize + ")"})
+                                    .attr("width", cellSize)
+                                    .attr("height", cellSize)
+                                    .attr("fill", function(d) { return getBinColor(d) })
+                                    .append("title")
+                                    .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings});
+                            })
     }
 
 
