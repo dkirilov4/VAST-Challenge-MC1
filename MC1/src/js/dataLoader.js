@@ -28,7 +28,7 @@ var DataLoader = function()
     {
         console.log(dailyData[0])
         self.createHeatMap();
-        // self.createNodeMap();
+        self.createNodeMap();
     }
 
     //
