@@ -4,6 +4,38 @@
 <head>
     <title>MC 1</title>
 
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <style>
+        /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
+        .row.content {height: 1500px}
+        
+        /* Set gray background color and 100% height */
+        .sidenav {
+          background-color: #f1f1f1;
+          height: 100%;
+        }
+        
+        /* Set black background color, white text and some padding */
+        footer {
+          background-color: #555;
+          color: white;
+          padding: 15px;
+        }
+        
+        /* On small screens, set height to 'auto' for sidenav and grid */
+        @media screen and (max-width: 767px) {
+          .sidenav {
+            height: auto;
+            padding: 15px;
+          }
+          .row.content {height: auto;} 
+        }
+      </style>
+
     <!-- CSS Libraries -->
 
     <!-- CSS Source -->
@@ -27,21 +59,40 @@
 
 <body onload = "App.start();">
 
-<div class = "title">
+<!-- <div class = "title">
     <center><h3>VAST Mini Challenge 1</h3></center>
-    <!--<input type="range" id="rangeslider" value="0" min="0" max="380" step="1">-->
-</div>
+    <input type="range" id="rangeslider" value="0" min="0" max="380" step="1">
+</div> -->
 
-<div class = "container-fluid">
+ <!-- <div class = "container-fluid">
     <div class = "row">
         <div class = "heatMapDiv col-md-12">
             <h3>Heat Map</h3>
-            <!--<canvas width = "1000" height = "1000"></canvas>-->
+            <canvas width = "1000" height = "1000"></canvas>
         </div>
-        <!--<div class = "col-md-4">
+        <div class = "col-md-4">
             <h3>Bar Chart</h3>
-        </div>-->
+        </div>
     </div>
+</div> -->
+
+<div class="container-fluid">
+  <div class="row content">
+    <div class="col-sm-9">
+    <input type="range" id="rangeslider" value="0" min="0" max="380" step="1">
+      <h4>Map goes here</h4>
+
+    </div>
+
+    <div class="col-sm-3 sidenav">
+      <h4>Data goes here</h4>
+    </div>
+
+  </div>
+</div>
+
+<div class="heatMapDiv container-fluid">
+  <center><h4>Heat map</h4></center>
 </div>
 
 
