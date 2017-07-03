@@ -14,6 +14,7 @@ svg
 {
     background: transparent;
     font-family: helvetica, sans-serif;
+    position: absolute;
 }
 
 .nodeMapDiv{
@@ -77,6 +78,9 @@ svg
   top:0px;
 }
 
+canvas{
+  position: absolute;
+}
 p {
     text-indent: 50px;
 }

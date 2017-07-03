@@ -53,7 +53,6 @@ var NodeMap = function ()
         svg = d3.select(".nodeMapDiv").append("svg")
             .attr("width", width)
             .attr("height", height)
-            .attr("transform", "translate(0, -1000)")
             .append("g")
     }
 
