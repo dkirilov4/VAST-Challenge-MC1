@@ -19,6 +19,8 @@ var DataLoader = function()
 
     var gateData = [];
 
+    var nodeData = [];
+
     var vehicleData = [];
 
 
@@ -30,7 +32,6 @@ var DataLoader = function()
     {
         self.createHeatMap();
         self.createNodeMap();
-        console.log(gateData)
     }
 
     //
@@ -46,7 +47,7 @@ var DataLoader = function()
     self.createNodeMap = function()
     {
         var nodeMap = new NodeMap();
-        nodeMap.createNodeMap(rawData, dailyData, gateNames, gateData);
+        nodeMap.createNodeMap(rawData, dailyData, gateNames, gateData, nodeData, vehicleData);
     }
 
 
@@ -174,11 +175,32 @@ var DataLoader = function()
             if (!vehicleData[rawData[i].CarID])
             {
                 vehicleData[rawData[i].CarID] = {CarID: rawData[i].CarID, CarType: rawData[i].CarType, Locations: []};
-                vehicleData[rawData[i].CarID].Locations.push({GateName: rawData[i].GateName, Timestamp: rawData[i].Timestamp})
+
+                var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, X: 0, Y: 0};
+                for (var j = 0; j < nodeData.length; j++)
+                {
+                    if (rawData[i].GateName == nodeData[j].id)
+                    {
+                        newLocation.X = nodeData[j].x;
+                        newLocation.Y = nodeData[j].y;
+                    }
+                }
+
+                vehicleData[rawData[i].CarID].Locations.push(newLocation);
             }
             else
             {
-                vehicleData[rawData[i].CarID].Locations.push({GateName: rawData[i].GateName, Timestamp: rawData[i].Timestamp})
+                var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, X: 0, Y: 0};
+                for (var j = 0; j < nodeData.length; j++)
+                {
+                    if (rawData[i].GateName == nodeData[j].id)
+                    {
+                        newLocation.X = nodeData[j].x;
+                        newLocation.Y = nodeData[j].y;
+                    }
+                }
+
+                vehicleData[rawData[i].CarID].Locations.push(newLocation)
             }
         }
     }
@@ -193,6 +215,50 @@ var DataLoader = function()
         // Load all necessary data
         initialize: function(file)
         {
+            nodeData = 
+            [
+                {id: "entrance0", x: 193, y: 33},
+                {id: "entrance1", x: 57, y: 195},
+                {id: "entrance2", x: 558, y: 258},
+                {id: "entrance3", x: 353, y: 499},
+                {id: "entrance4", x: 429, y: 551},
+                {id: "general-gate0", x: 339, y: 17},
+                {id: "general-gate1", x: 198, y: 69},
+                {id: "general-gate2", x: 321, y: 91},
+                {id: "general-gate3", x: 566, y: 161},
+                {id: "general-gate4", x: 214, y: 292},
+                {id: "general-gate5", x: 381, y: 328},
+                {id: "general-gate6", x: 415, y: 410},
+                {id: "general-gate7", x: 202, y: 431},
+                {id: "ranger-stop0", x: 272, y: 43},
+                {id: "ranger-stop1", x: 64, y: 69},
+                {id: "ranger-stop2", x: 248, y: 96},
+                {id: "ranger-stop3", x: 453, y: 132},
+                {id: "ranger-stop4", x: 60, y: 284},
+                {id: "ranger-stop5", x: 462, y: 352},
+                {id: "ranger-stop6", x: 373, y: 443},
+                {id: "ranger-stop7", x: 306, y: 445},
+                {id: "camping0", x: 163, y: 120},
+                {id: "camping1", x: 396, y: 147},
+                {id: "camping2", x: 137, y: 186},
+                {id: "camping3", x: 143, y: 204},
+                {id: "camping4", x: 151, y: 266},
+                {id: "camping5", x: 68, y: 360},
+                {id: "camping6", x: 457, y: 530},
+                {id: "camping7", x: 553, y: 433},
+                {id: "camping8", x: 560, y: 142},
+                {id: "gate0", x: 195, y: 93},
+                {id: "gate1", x: 180, y: 129},
+                {id: "gate2", x: 91, y: 157},
+                {id: "gate3", x: 455, y: 178},
+                {id: "gate4", x: 502, y: 340},
+                {id: "gate5", x: 400, y: 435},
+                {id: "gate6", x: 356, y: 453},
+                {id: "gate7", x: 298, y: 479},
+                {id: "gate8", x: 423, y: 541},
+                {id: "ranger-base", x: 394, y: 525}
+            ]
+
             self.loadData(file)
         },
     };
