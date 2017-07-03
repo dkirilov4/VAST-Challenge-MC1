@@ -29,7 +29,7 @@ var DataLoader = function()
     self.createVis = function()
     {
         self.createHeatMap();
-        //self.createNodeMap();
+        self.createNodeMap();
         console.log(gateData)
     }
 
@@ -74,10 +74,9 @@ var DataLoader = function()
         .get(function()
         {
             self.loadVehicleData();
-            console.log(Object.keys(vehicleData))
-            // self.loadDailyData();
-            // self.loadGateData();
-            // self.createVis();
+            self.loadDailyData();
+            self.loadGateData();
+            self.createVis();
         })
     };
 

@@ -43,11 +43,11 @@ var NodeMap = function ()
         function loaded() {
             context.globalAlpha = 0.2;
             context.scale(.621, .621);
-            context.drawImage(this, 0, 30);
+            context.drawImage(this, 0, 0);
         }
 
 
-        svg = d3.select("body").append("svg")
+        svg = d3.select(".nodeMapDiv").append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("transform", "translate(0, -1000)")
@@ -337,15 +337,10 @@ var NodeMap = function ()
 
             var x = d3.scaleLinear().range([0, width]);   
 
-            d3.select("body").append("svg")
+            d3.select(".barGraphDiv").append("svg")
                 .attr("class", "bargraph")
                 .attr("width", width)
                 .attr("height", height)
-                .attr("transform", "translate(620, -2000)")
-                // .append("g")
-                //     .attr("transform", "translate(0," + 10 + ")")
-                //     .call(d3.axisBottom(x))
-                //     .attr("fill", "white");
         },
     };
 

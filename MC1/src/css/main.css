@@ -10,7 +10,9 @@ svg
     font-family: helvetica, sans-serif;
 }
 
-
+.nodeMapDiv{
+  position: absolute;
+}
 
 .bargraph{
   background: white;
