@@ -115,17 +115,8 @@ var NodeMap = function ()
             });
     }
 
-    var createLineTrace = function()
+    var createLineTrace = function(locations)
     {
-            var carID = "20153203103200-611"
-            var locations = [];
-
-            for (var i = 0; i < vehicleData[carID].Locations.length; i++)
-            {
-                var newLocation = [vehicleData[carID].Locations[i].Points.X, vehicleData[carID].Locations[i].Points.Y];
-                locations.push(newLocation);
-            }
-
             var line = d3.line()
                 .curve(d3.curveCardinal.tension(0));
 
@@ -146,7 +137,7 @@ var NodeMap = function ()
             function transition(path) 
             {
                 path.transition()
-                    .duration(3000)
+                    .duration(7500)
                     .attrTween("stroke-dasharray", tweenDash)
                     .on("end", function() { d3.select(this).remove(); svg.remove(); });
             }
@@ -161,16 +152,50 @@ var NodeMap = function ()
 
     function handleMouseDown(d) 
     {   
+        var allPaths = [];
+
+        for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++)
+         {
+             if (d.id == dailyData[sliderValue].SensorData[i].Gate)
+             {
+                 console.log(dailyData[sliderValue].SensorData[i]);
+             }
+         }
+
         if (d.id.includes("entrance"))
         {
+            // For each gate in the currently selected day...
             for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++)
             {
+                // Find the one we clicked...
                 if (d.id == dailyData[sliderValue].SensorData[i].Gate)
                 {
-                    console.log(dailyData[sliderValue].SensorData[i]);
-                    //createLineTrace();
+                    // For each Car ID that was detected at that gate...
+                    for (var j = 0; j < dailyData[sliderValue].SensorData[i].CarIDs.length; j++)
+                    {
+                        var carID = dailyData[sliderValue].SensorData[i].CarIDs[j];
+                        console.log(carID);
+                        var carPath = [];
+
+                        // For each CarID, get its locations in [X, Y] format
+                        for (var k = 0; k < vehicleData[carID].Locations.length; k++)
+                        {
+                            var newLocation = [vehicleData[carID].Locations[k].Points.X, vehicleData[carID].Locations[k].Points.Y];
+                            if (vehicleData[carID].Locations[0].GateName == d.id)
+                                carPath.push(newLocation);
+                        }
+
+                        // Push each path to the overall path array for that gate
+                        allPaths.push(carPath)
+                    }
                 }
             }
+
+            for (var i = 0; i < allPaths.length; i++)
+            {
+                createLineTrace(allPaths[i]);
+            }
+            console.log(allPaths);
         }
         else
         {

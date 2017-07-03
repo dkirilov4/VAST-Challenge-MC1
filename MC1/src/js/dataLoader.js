@@ -121,7 +121,7 @@ var DataLoader = function()
                     {
                         if (dailyData[j].SensorData[k].Gate == rawData[i].GateName)
                         {
-                            dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarID);
+                            dailyData[j].SensorData[k].CarIDs.push(rawData[i].CarID);
                             dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarType);
                             dailyData[j].SensorData[k].NumReadings++;
                         }
@@ -137,7 +137,6 @@ var DataLoader = function()
             {
                 curDay++;
                 var emptyGates = createEmptyGatesArray();
-                dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarID);
                 dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates });
             }
 
