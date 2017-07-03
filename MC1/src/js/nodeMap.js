@@ -301,6 +301,7 @@ var NodeMap = function ()
     }
 
     //
+    // nice
     /* Publicly Available Functions: */
     //
     var publiclyAvailable = 
