@@ -53,3 +53,24 @@ svg
   stroke: #999;
   stroke-width: 1.5px;
 }
+
+.col-md-9{
+  position:relative; //make sure this is part of your col-md style
+}
+
+.bargraph{
+  background: #171717 !important;
+  color: lightgrey !important;
+}
+
+
+#canvas{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0px;
+}
+
+p {
+    text-indent: 50px;
+}
