@@ -106,10 +106,8 @@ var HeatMap = function()
         //         .range(["#9cffaa", "#00ff0d", "#fbff14", "#cf0000"]);
 
         colorScale = d3.scaleLinear()
-                .domain([minEntries, maxEntries * (1/3), maxEntries * (2/3), maxEntries])
-                .range(["#ffeb3b", "#ff8b33", "#ff3e29", "#80126F"]);
-
-        console.log("Here!");
+                .domain([minEntries, maxEntries * (1/4), maxEntries * (2/4), maxEntries * (3/4), maxEntries])
+                .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
 
         var svgContainer = d3.select(".heatMapDiv").append("svg")
                                 .attr("width", "100%")

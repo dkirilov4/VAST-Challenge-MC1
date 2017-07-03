@@ -19,6 +19,8 @@ var DataLoader = function()
 
     var gateData = [];
 
+    var vehicleData = [];
+
 
     //
     /* Visualizations */
@@ -26,9 +28,9 @@ var DataLoader = function()
 
     self.createVis = function()
     {
-        console.log(dailyData[0])
         self.createHeatMap();
-        self.createNodeMap();
+        //self.createNodeMap();
+        console.log(gateData)
     }
 
     //
@@ -71,9 +73,11 @@ var DataLoader = function()
         })
         .get(function()
         {
-            self.loadDailyData();
-            self.loadGateData();
-            self.createVis();
+            self.loadVehicleData();
+            console.log(Object.keys(vehicleData))
+            // self.loadDailyData();
+            // self.loadGateData();
+            // self.createVis();
         })
     };
 
@@ -162,8 +166,22 @@ var DataLoader = function()
         }
 
         gateData = emptyGates;
-        console.log(Object.keys(gateData).length)
-        // console.log(gateData["entrance3"]);
+    }
+
+    self.loadVehicleData = function()
+    {
+        for (var i = 0; i < rawData.length; i++)
+        {
+            if (!vehicleData[rawData[i].CarID])
+            {
+                vehicleData[rawData[i].CarID] = {CarID: rawData[i].CarID, CarType: rawData[i].CarType, Locations: []};
+                vehicleData[rawData[i].CarID].Locations.push({GateName: rawData[i].GateName, Timestamp: rawData[i].Timestamp})
+            }
+            else
+            {
+                vehicleData[rawData[i].CarID].Locations.push({GateName: rawData[i].GateName, Timestamp: rawData[i].Timestamp})
+            }
+        }
     }
 
 
