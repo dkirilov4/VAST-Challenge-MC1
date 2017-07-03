@@ -116,25 +116,23 @@ var NodeMap = function ()
     }
 
     function handleMouseDown(d) 
-    {
-        var points = 
-        [
-            [353, 499],
-            [198, 69],
-            [248, 96],
-            [272, 43],
-            [321, 91],
-            [381, 328],
-            [429, 551],
-        ]
+    {   
+        var carID = "20153203103200-611"
+        var locations = [];
+
+        for (var i = 0; i < vehicleData[carID].Locations.length; i++)
+        {
+            var newLocation = [vehicleData[carID].Locations[i].Points.X, vehicleData[carID].Locations[i].Points.Y];
+            locations.push(newLocation);
+        }
 
         var line = d3.line()
             .curve(d3.curveCardinal.tension(0));
 
         var svg = d3.select(".nodeMapDiv").append("svg")
-            .datum(points)
+            .datum(locations)
             .attr("width", 960)
-            .attr("height", 500);
+            .attr("height", 800);
 
         svg.append("path")
             .style("stroke", "#ddd")
