@@ -176,13 +176,12 @@ var DataLoader = function()
             {
                 vehicleData[rawData[i].CarID] = {CarID: rawData[i].CarID, CarType: rawData[i].CarType, Locations: []};
 
-                var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, X: 0, Y: 0};
-                for (var j = 0; j < nodeData.length; j++)
+                var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, Points: {X: 0, Y: 0}};                for (var j = 0; j < nodeData.length; j++)
                 {
                     if (rawData[i].GateName == nodeData[j].id)
                     {
-                        newLocation.X = nodeData[j].x;
-                        newLocation.Y = nodeData[j].y;
+                        newLocation.Points.X = nodeData[j].x;
+                        newLocation.Points.Y = nodeData[j].y;
                     }
                 }
 
@@ -190,13 +189,13 @@ var DataLoader = function()
             }
             else
             {
-                var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, X: 0, Y: 0};
+                var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, Points: {X: 0, Y: 0}};
                 for (var j = 0; j < nodeData.length; j++)
                 {
                     if (rawData[i].GateName == nodeData[j].id)
                     {
-                        newLocation.X = nodeData[j].x;
-                        newLocation.Y = nodeData[j].y;
+                        newLocation.Points.X = nodeData[j].x;
+                        newLocation.Points.Y = nodeData[j].y;
                     }
                 }
 

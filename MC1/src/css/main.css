@@ -4,6 +4,12 @@ body
   color: lightgrey !important;
 }
 
+path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
 svg
 {
     background: transparent;
