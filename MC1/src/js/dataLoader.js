@@ -87,7 +87,7 @@ var DataLoader = function()
         var emptyGates = [];
 
         for (var i = 0; i < gateNames.length; i++)
-            emptyGates.push({Gate: gateNames[i], CarTypes: [], NumReadings: 0})
+            emptyGates.push({Gate: gateNames[i], CarTypes: [], CarIDs: [], NumReadings: 0})
 
         return emptyGates;
     }
@@ -121,6 +121,7 @@ var DataLoader = function()
                     {
                         if (dailyData[j].SensorData[k].Gate == rawData[i].GateName)
                         {
+                            dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarID);
                             dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarType);
                             dailyData[j].SensorData[k].NumReadings++;
                         }
@@ -136,6 +137,7 @@ var DataLoader = function()
             {
                 curDay++;
                 var emptyGates = createEmptyGatesArray();
+                dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarID);
                 dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates });
             }
 

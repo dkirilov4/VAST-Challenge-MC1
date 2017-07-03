@@ -115,47 +115,66 @@ var NodeMap = function ()
             });
     }
 
+    var createLineTrace = function()
+    {
+            var carID = "20153203103200-611"
+            var locations = [];
+
+            for (var i = 0; i < vehicleData[carID].Locations.length; i++)
+            {
+                var newLocation = [vehicleData[carID].Locations[i].Points.X, vehicleData[carID].Locations[i].Points.Y];
+                locations.push(newLocation);
+            }
+
+            var line = d3.line()
+                .curve(d3.curveCardinal.tension(0));
+
+            var svg = d3.select(".nodeMapDiv").append("svg")
+                .datum(locations)
+                .attr("width", 960)
+                .attr("height", 800);
+
+            svg.append("path")
+                .style("stroke", "#ddd")
+                .style("stroke-dasharray", "4,4")
+                .attr("d", line);
+
+            svg.append("path")
+                .attr("d", line)
+                .call(transition);
+
+            function transition(path) 
+            {
+                path.transition()
+                    .duration(3000)
+                    .attrTween("stroke-dasharray", tweenDash)
+                    .on("end", function() { d3.select(this).remove(); svg.remove(); });
+            }
+
+            function tweenDash() 
+            {
+                var l = this.getTotalLength(),
+                    i = d3.interpolateString("0," + l, l + "," + l);
+                return function(t) { return i(t); };
+            }
+    }
+
     function handleMouseDown(d) 
     {   
-        var carID = "20153203103200-611"
-        var locations = [];
-
-        for (var i = 0; i < vehicleData[carID].Locations.length; i++)
+        if (d.id.includes("entrance"))
         {
-            var newLocation = [vehicleData[carID].Locations[i].Points.X, vehicleData[carID].Locations[i].Points.Y];
-            locations.push(newLocation);
+            for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++)
+            {
+                if (d.id == dailyData[sliderValue].SensorData[i].Gate)
+                {
+                    console.log(dailyData[sliderValue].SensorData[i]);
+                    //createLineTrace();
+                }
+            }
         }
-
-        var line = d3.line()
-            .curve(d3.curveCardinal.tension(0));
-
-        var svg = d3.select(".nodeMapDiv").append("svg")
-            .datum(locations)
-            .attr("width", 960)
-            .attr("height", 800);
-
-        svg.append("path")
-            .style("stroke", "#ddd")
-            .style("stroke-dasharray", "4,4")
-            .attr("d", line);
-
-        svg.append("path")
-            .attr("d", line)
-            .call(transition);
-
-        function transition(path) 
+        else
         {
-            path.transition()
-                .duration(7500)
-                .attrTween("stroke-dasharray", tweenDash)
-                .on("end", function() { d3.select(this).call((transition)); });
-        }
-
-        function tweenDash() 
-        {
-            var l = this.getTotalLength(),
-                i = d3.interpolateString("0," + l, l + "," + l);
-            return function(t) { return i(t); };
+            console.log("Not an Entrance!");
         }
     }
 
