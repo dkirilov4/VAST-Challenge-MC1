@@ -60,11 +60,11 @@ var NodeMap = function ()
     {
         var nodeMap = svg.append("g")
             .attr("class", "nodeMap")
-            .selectAll(".cell")
+            .selectAll("circle")
             .data(nodeData)
             .enter()
             .append("circle")
-            .attr("class", "cell")
+            .attr("class", function(d) { return d.id })
             .attr("cx", function (d) {
                 return d.x
             })
@@ -237,14 +237,15 @@ var NodeMap = function ()
 
         sliderValue = parseFloat(target.value);
 
-        svg.selectAll(".cell").remove().exit();
+        svg.selectAll("circle").remove().exit();
+
         var nodeMap = svg.append("g")
             .attr("class", "nodeMap")
-            .selectAll(".cell")
+            .selectAll("circle")
             .data(nodeData)
             .enter()
             .append("circle")
-            .attr("class", "cell")
+            .attr("class", function(d) { return d.id })
             .attr("cx", function (d) {
                 return d.x
             })
