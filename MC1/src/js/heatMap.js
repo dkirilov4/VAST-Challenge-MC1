@@ -110,8 +110,8 @@ var HeatMap = function()
                 .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
 
         var svgContainer = d3.select(".heatMapDiv").append("svg")
-                                .attr("width", "100%")
-                                .attr("height", (numCols / numRows) * 100 + "%")
+                                .attr("width", "90%")
+                                .attr("height", (numCols / numRows) * 400 + "%")
                                 .attr("viewBox", "0 0 " + (numRows * cellSize) + " " + (numCols * cellSize));
 
         var gContainer = svgContainer.append("g")
