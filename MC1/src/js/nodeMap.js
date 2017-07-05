@@ -26,52 +26,114 @@ var NodeMap = function ()
 
 
     //
+    /* Graph View */
+    //
+    self.createGraphView = function()
+    {
+        var x = d3.scaleLinear().range([0, width]);   
+
+        d3.select(".barGraphDiv").append("svg")
+            .attr("class", "bargraph")
+            .attr("width", width)
+            .attr("height", height)
+    }
+
+
+    //
     /* Node Map: */
     //
 
     // Node Map Properties:
+    var sliderValue = 0;
+
     // SVG Properties:
+    var svgContainer;
+
     self.createCanvas = function()
     {
-        var canvas = document.querySelector("canvas"),
-            context = canvas.getContext("2d"),
-            width = canvas.width,
-            height = canvas.height;
+        var myCanvas = document.querySelector("canvas");
+        
+        var canvasWidth  = myCanvas.width;
+        var canvasHeight = myCanvas.height;
 
-        var image = new Image;
-        image.src = "data/Lekagul Roadways labeled v2.jpg";
+        var canvasContext = myCanvas.getContext("2d");
 
-        image.onload = loaded;
-
-        function loaded() {
-            context.globalAlpha = 0.2;
-            context.scale(.621, .621);
-            context.drawImage(this, 0, 0);
+        var LekagulRoadwaysMap = new Image;
+        LekagulRoadwaysMap.src = "data/Lekagul Roadways labeled v2.jpg";
+        LekagulRoadwaysMap.onload = function()
+        {
+            canvasContext.globalAlpha = 0.2;
+            canvasContext.scale(0.621, 0.621);
+            canvasContext.drawImage(this, 0, 0);
         }
 
-
-        svg = d3.select(".nodeMapDiv").append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
+        svgContainer = d3.select(".nodeMapDiv")
+                        .append("svg")
+                        .attr("width", canvasWidth)
+                        .attr("height", canvasHeight)
+                        .append("g")
     }
 
     self.createNodeMap = function()
     {
-        var nodeMap = svg.append("g")
+        var nodeMap = svgContainer.append("g")
             .attr("class", "nodeMap")
             .selectAll("circle")
             .data(nodeData)
             .enter()
             .append("circle")
             .attr("class", function(d) { return d.id })
-            .attr("cx", function (d) {
-                return d.x
+            .attr("cx", function (d) { return d.x })
+            .attr("cy", function (d) { return d.y })
+            .attr("fill", function (d) { return getNodeColor(d) })
+            .attr("r", function (d)
+            {
+                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) 
+                {
+                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) 
+                    {
+                        if (dailyData[sliderValue].SensorData[i].NumReadings == 0)
+                        {
+                            d3.select(this).attr("fill", "white");
+                            return 5;
+                        }
+                        if (dailyData[sliderValue].SensorData[i].NumReadings < 5) 
+                        {
+                            return 5;
+                        } else
+                            return dailyData[sliderValue].SensorData[i].NumReadings / 2;
+                    }
+                }
             })
-            .attr("cy", function (d) {
-                return d.y
-            })
-            .attr("fill", function (d) {
+            .on("mousedown", handleMouseDown)
+            .on("mouseover", handleMouseOver)
+            .append("title")
+            .text(function (d) { return getTitleText(d) });
+
+            // Attribute Functions:
+
+            function getNodeRadius(d)
+            {
+                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) 
+                {
+                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) 
+                    {
+                        if (dailyData[sliderValue].SensorData[i].NumReadings == 0)
+                        {
+                            d3.select(this).attr("fill", "white");
+                            return 5;
+                        }
+                        if (dailyData[sliderValue].SensorData[i].NumReadings < 5) 
+                        {
+                            return 5;
+                        } else
+                            return dailyData[sliderValue].SensorData[i].NumReadings / 2;
+                    }
+                }
+            }
+
+            function getNodeColor(d)
+            {
                 if (d.id.includes("entrance"))
                     return "#4daf4a";
                 else if (d.id.includes("general-gate"))
@@ -84,35 +146,19 @@ var NodeMap = function ()
                     return "#984ea3";
                 else
                     return "#fb8072"
-            })
-            .attr("r", function (d) {
-                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) {
-                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) {
-                        if (dailyData[sliderValue].SensorData[i].NumReadings == 0)
-                        {
-                            d3.select(this).attr("fill", "grey");
-                            return 5;
-                        }
-                        if (dailyData[sliderValue].SensorData[i].NumReadings < 5) {
-                            return 5;
-                        } else
-                            return dailyData[sliderValue].SensorData[i].NumReadings;
-                    }
+            }
 
-                }
-            })
-            .on("mousedown", handleMouseDown)
-            .on("mouseover", handleMouseOver)
-            .append("title")
-            .text(function (d) {
-                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) {
-                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) {
+            function getTitleText(d)
+            {
+                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) 
+                {
+                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) 
+                    {
                         var numReadings = dailyData[sliderValue].SensorData[i].NumReadings;
                         return (d.id + "\nEntries: " + numReadings);
                     }
-
                 }
-            });
+            }
     }
 
     var createLineTrace = function(locations)
@@ -271,75 +317,18 @@ var NodeMap = function ()
                         });
     }
 
-
-
-    var svg;
-    var sliderValue = 0;
     document.getElementById("rangeslider").addEventListener("input", onSliderMove, false);
-    function onSliderMove(e) {
+    function onSliderMove(e) 
+    {
         var target = (e.target) ? e.target : e.srcElement;
 
-        sliderValue = parseFloat(target.value);
+        sliderValue = parseInt(target.value);
+        svgContainer.selectAll("circle").remove().exit();
 
-        svg.selectAll("circle").remove().exit();
-
-        var nodeMap = svg.append("g")
-            .attr("class", "nodeMap")
-            .selectAll("circle")
-            .data(nodeData)
-            .enter()
-            .append("circle")
-            .attr("class", function(d) { return d.id })
-            .attr("cx", function (d) {
-                return d.x
-            })
-            .attr("cy", function (d) {
-                return d.y
-            })
-            .attr("fill", function (d) {
-                if (d.id.includes("entrance"))
-                    return "#4daf4a";
-                else if (d.id.includes("general-gate"))
-                    return "#377eb8";
-                else if (d.id.includes("ranger-stop"))
-                    return "#ffff33";
-                else if (d.id.includes("camping"))
-                    return "#ff7f00";
-                else if (d.id.includes("ranger-base"))
-                    return "#984ea3";
-                else
-                    return "#fb8072"
-            })
-            .attr("r", function (d) {
-                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) {
-                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) {
-                        if (dailyData[sliderValue].SensorData[i].NumReadings == 0)
-                        {
-                            d3.select(this).attr("fill", "grey");
-                            return 5;
-                        }
-                        if (dailyData[sliderValue].SensorData[i].NumReadings / 2 < 10) {
-                            return 5;
-                        } else
-                            return dailyData[sliderValue].SensorData[i].NumReadings / 2;
-                    }
-
-                }
-            })
-            .append("title")
-            .text(function (d) {
-                for (var i = 0; i < dailyData[sliderValue].SensorData.length; i++) {
-                    if (d.id == dailyData[sliderValue].SensorData[i].Gate) {
-                        var numReadings = dailyData[sliderValue].SensorData[i].NumReadings;
-                        return (d.id + "\nEntries: " + numReadings);
-                    }
-
-                }
-            });
+        self.createNodeMap();
     }
 
     //
-    // nice
     /* Publicly Available Functions: */
     //
     var publiclyAvailable = 
@@ -353,15 +342,9 @@ var NodeMap = function ()
             nodeData = nData
             vehicleData = vData;
             
+            self.createGraphView();
             self.createCanvas();
             self.createNodeMap();
-
-            var x = d3.scaleLinear().range([0, width]);   
-
-            d3.select(".barGraphDiv").append("svg")
-                .attr("class", "bargraph")
-                .attr("width", width)
-                .attr("height", height)
         },
     };
 
