@@ -137,9 +137,15 @@ var HeatMap = function()
                                     .append("title")
                                     .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings});
                             })
+                            .on("mousedown", handleMouseDown)
     }
 
 
+    function handleMouseDown(d)
+    {
+    	console.log("Pressed!");
+        
+    }
 
 
     //

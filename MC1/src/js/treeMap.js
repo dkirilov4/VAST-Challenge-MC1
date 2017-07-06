@@ -1,38 +1,72 @@
-// "use strict";
+"use strict";
 
-// var App = App || {};
+var App = App || {};
 
-// var HeatMap = function()
-// {
-//     var self = this;
+var HeatMap = function()
+{
+    var self = this;
 
-//     //
-//     /* Global Scope Variables: */
-//     //
+    //
+    /* Global Scope Variables: */
+    //
 
 
-//     //
-//     /* Tree Map */
-//     //
-//     self.createTreeMap = function ()
-//     {
+    //
+    /* Tree Map */
+    //
+    self.createTreeMap = function ()
+    {
 
-//     }
+    }
 
-//     //
-//     /* Publicly Available Functions: */
-//     //
-//     var publiclyAvailable = 
-//     {
-//         createHeatMap: function(rData, dData, gData)
-//         {
-//             rawData = rData;
-//             dailyData = dData;
-//             gateData = gData;
+    function calculateSimilarity(carA, carB){
+    	var distance = 0.0;
+    	
+    	//check how similiar time spent at the park is
+    	// scale: (1 second ... 350 days)
+    	// domain: [0 ... 1]
+    	if(){
+    		var timeSpent = 0.0;
+    		distance += timeSpent
+    	}
 
-//             self.createTreeMap();
-//         },
-//     };
+    	//check how similiar day(s) spent at the park is
+    	// scale: (0  ... 6) 0 = same day of the week ; 6 = 6 days apart
+    	// domain: [0 ... 1]
 
-//     return publiclyAvailable;
-// }
+    	//check how similiar entrance time is
+    	// scale: (0 ... 12 hours) 0 = same hour, 12 = 12 hours apart
+    	// domain: [0 ... 1]
+
+    	//check how similiar exit time is
+    	// scale: (0 ... 12 hours) 0 = same hour, 12 = 12 hours apart
+    	// domain: [0 ... 1]
+
+    	//check how similiar vehicle type is
+    	// scale: 0 or 1
+    	// domain: 0 or 1
+
+    	//check how similiar paths are
+    	// scale: (0  ... 1) TO DO: later with levenshtein 
+    	// domain: [0 ... 1]
+
+    	
+    	return distance;
+    }
+    //
+    /* Publicly Available Functions: */
+    //
+    var publiclyAvailable = 
+    {
+        createHeatMap: function(rData, dData, gData)
+        {
+            rawData = rData;
+            dailyData = dData;
+            gateData = gData;
+
+            self.createTreeMap();
+        },
+    };
+
+    return publiclyAvailable;
+}
