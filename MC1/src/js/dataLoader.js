@@ -114,8 +114,8 @@ var DataLoader = function()
         */
 
 
-        //self.createHeatMap();
-        //self.createNodeMap();
+        // self.createHeatMap();
+        // self.createNodeMap();
     }
 
     //

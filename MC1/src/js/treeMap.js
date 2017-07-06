@@ -1,38 +1,38 @@
-"use strict";
+// "use strict";
 
-var App = App || {};
+// var App = App || {};
 
-var HeatMap = function()
-{
-    var self = this;
+// var HeatMap = function()
+// {
+//     var self = this;
 
-    //
-    /* Global Scope Variables: */
-    //
+//     //
+//     /* Global Scope Variables: */
+//     //
 
 
-    //
-    /* Tree Map */
-    //
-    self.createTreeMap = function ()
-    {
-        
-    }
+//     //
+//     /* Tree Map */
+//     //
+//     self.createTreeMap = function ()
+//     {
 
-    //
-    /* Publicly Available Functions: */
-    //
-    var publiclyAvailable = 
-    {
-        createHeatMap: function(rData, dData, gData)
-        {
-            rawData = rData;
-            dailyData = dData;
-            gateData = gData;
+//     }
 
-            self.createTreeMap();
-        },
-    };
+//     //
+//     /* Publicly Available Functions: */
+//     //
+//     var publiclyAvailable = 
+//     {
+//         createHeatMap: function(rData, dData, gData)
+//         {
+//             rawData = rData;
+//             dailyData = dData;
+//             gateData = gData;
 
-    return publiclyAvailable;
-}
+//             self.createTreeMap();
+//         },
+//     };
+
+//     return publiclyAvailable;
+// }

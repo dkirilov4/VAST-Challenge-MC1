@@ -15,7 +15,11 @@ svg
 {
     background: transparent;
     font-family: helvetica, sans-serif;
-    position: relative;
+    /*position: relative;*/
+}
+
+.heatMapDiv{
+  position: relative
 }
 
 .nodeMapDiv{
@@ -62,7 +66,7 @@ circle:hover {
 }
 
 .col-md-9{
-  position:relative; //make sure this is part of your col-md style
+  position:relative;
 }
 
 .bargraph{
