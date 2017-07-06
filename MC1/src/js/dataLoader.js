@@ -116,6 +116,7 @@ var DataLoader = function()
 
         // self.createHeatMap();
         // self.createNodeMap();
+        self.createTreeMap();
     }
 
     //
@@ -132,6 +133,13 @@ var DataLoader = function()
     {
         var nodeMap = new NodeMap();
         nodeMap.createNodeMap(rawData, dailyData, gateNames, gateData, nodeData, vehicleData);
+    }
+
+    self.createTreeMap = function()
+    {
+        var treeMap = new TreeMap();
+        treeMap.createTreeMap(vehicleData);
+
     }
 
 

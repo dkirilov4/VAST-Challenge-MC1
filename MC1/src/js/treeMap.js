@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-var HeatMap = function()
+var TreeMap = function()
 {
     var self = this;
 
@@ -10,13 +10,15 @@ var HeatMap = function()
     /* Global Scope Variables: */
     //
 
+	var vehicleData = [];
+
 
     //
     /* Tree Map */
     //
     self.createTreeMap = function ()
     {
-
+		
     }
 
     function calculateSimilarity(carA, carB){
@@ -67,11 +69,9 @@ var HeatMap = function()
     //
     var publiclyAvailable = 
     {
-        createHeatMap: function(rData, dData, gData)
+        createTreeMap: function(vData)
         {
-            rawData = rData;
-            dailyData = dData;
-            gateData = gData;
+            vehicleData = vData;
 
             self.createTreeMap();
         },
