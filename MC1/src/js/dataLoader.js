@@ -30,6 +30,7 @@ var DataLoader = function()
 
     self.createVis = function()
     {
+        /*
         var maxLeftDate = 0;
         var maxLeftID = ""
 
@@ -41,7 +42,6 @@ var DataLoader = function()
 
         for (var carID in vehicleData)
         {
-            // console.log(vehicleData[carID])
             var locLength = vehicleData[carID].Locations.length
 
             var startDate = new Date(vehicleData[carID].Locations[0].Timestamp)
@@ -54,6 +54,15 @@ var DataLoader = function()
                 maxDate = curDate;
             }
 
+            if (curDate > maxLeftDate)
+            {
+                if (vehicleData[carID].Locations[locLength - 1].GateName.includes("entrance"))
+                {
+                    maxLeftID = carID;
+                    maxLeftDate = curDate;
+                }
+            }
+
 
             if (curDate < minDate)
             {
@@ -61,23 +70,33 @@ var DataLoader = function()
                 minDate = curDate;
             }
 
-            if (!vehicleData[carID].Locations[locLength - 1].GateName.includes("entrance"))
+            var entranceCount = 0;
+            for (var i = 0; i < vehicleData[carID].Locations.length; i++)
             {
-                if (vehicleData[carID].CarType != "2P")
-                {
-                    console.log(vehicleData[carID])
-                    console.log("No Exit")   
-                }             
+                if (vehicleData[carID].Locations[i].GateName.includes("entrance"))
+                    entranceCount++;
             }
 
-            if (!vehicleData[carID].Locations[0].GateName.includes("entrance"))
-            {
-                if (vehicleData[carID].CarType != "2P")
-                {
-                    console.log("No Entrance")
-                    console.log(vehicleData[carID])   
-                }
-            }
+            if (entranceCount > 2)
+                console.log(vehicleData[carID])
+
+            // if (!vehicleData[carID].Locations[locLength - 1].GateName.includes("entrance"))
+            // {
+            //     if (vehicleData[carID].CarType != "2P")
+            //     {
+            //         console.log(vehicleData[carID])
+            //         console.log("No Exit")   
+            //     }             
+            // }
+
+            // if (!vehicleData[carID].Locations[0].GateName.includes("entrance"))
+            // {
+            //     if (vehicleData[carID].CarType != "2P")
+            //     {
+            //         console.log("No Entrance")
+            //         console.log(vehicleData[carID])   
+            //     }
+            // }
             // console.log(vehicleData[carID].Locations[locLength - 1].Timestamp)
         }
 
@@ -88,6 +107,13 @@ var DataLoader = function()
         console.log("MAX:")
         console.log(maxID)
         console.log(maxDate)
+
+        console.log("MAX LEFT:")
+        console.log(maxLeftID)
+        console.log(maxLeftDate)
+        */
+
+
         //self.createHeatMap();
         //self.createNodeMap();
     }
@@ -233,7 +259,7 @@ var DataLoader = function()
         {
             if (!vehicleData[rawData[i].CarID])
             {
-                vehicleData[rawData[i].CarID] = {CarID: rawData[i].CarID, CarType: rawData[i].CarType, Locations: []};
+                vehicleData[rawData[i].CarID] = {CarID: rawData[i].CarID, CarType: rawData[i].CarType, TimeSpent: -1, Locations: []};
 
                 var newLocation = {Timestamp: rawData[i].Timestamp, GateName: rawData[i].GateName, Points: {X: 0, Y: 0}};                for (var j = 0; j < nodeData.length; j++)
                 {
@@ -260,6 +286,17 @@ var DataLoader = function()
 
                 vehicleData[rawData[i].CarID].Locations.push(newLocation)
             }
+        }
+
+        for (var carID in vehicleData)
+        {
+            var locLength = vehicleData[carID].Locations.length
+
+            var startDate = new Date(vehicleData[carID].Locations[0].Timestamp)
+            var endDate   = new Date(vehicleData[carID].Locations[locLength - 1].Timestamp)
+
+            var curDate = endDate - startDate;
+            vehicleData[carID].TimeSpent = curDate;
         }
     }
 
