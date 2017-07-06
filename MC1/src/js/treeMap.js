@@ -25,10 +25,19 @@ var HeatMap = function()
     	//check how similiar time spent at the park is
     	// scale: (1 second ... 350 days)
     	// domain: [0 ... 1]
-    	if(){
-    		var timeSpent = 0.0;
-    		distance += timeSpent
+
+    	var timeSpentScale = d3.scaleLinear()
+    							.domain([0, 30240000000])
+    							.range([0,1]);
+    							
+    	if(carA.TimeSpent > carB.TimeSpent){
+    		var timeSpent = carA.TimeSpent - carB.TimeSpent;
     	}
+    	else {
+    		var timeSpent = carB.TimeSpent - carA.TimeSpent;
+    	}
+
+    	distance += timeSpentScale(timeSpent);
 
     	//check how similiar day(s) spent at the park is
     	// scale: (0  ... 6) 0 = same day of the week ; 6 = 6 days apart
