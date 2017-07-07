@@ -85,6 +85,8 @@ p {
     text-indent: 50px;
 }
 
+.tab { margin-left: -60px; }
+
 /* Histogram: */
 .bar:hover 
 {

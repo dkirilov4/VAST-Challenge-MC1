@@ -63,21 +63,80 @@
 
 <body onload = "App.start();">
 
-<div class="container-fluid">
+<!-- <div class="container-fluid">
   <h1>VAST Challenge MC#1</h1>
   <h7>Dimitar Kirilov || Isabel Lindmae</h7><br><br>
   <div class="row">
     <div class="histogram col-md-10">
     </div>
     <div class="filters col-md-2">
+      <h4>Filter options</h4>
+      <hr>
+      <div class="AllVisitors checkbox">
+        <label><input type="checkbox" value="">Visitors</label>
+          <div class="StillThere checkbox">
+          <p class="tab">
+            <label><input type="checkbox" value="">Still in the park</label>
+          </p>
+          <p class="tab">
+            <label><input type="checkbox" value="">Out of the park</label>
+          </p>
+          
+          </div>
+      </div>
+      <div class="Rangers checkbox">
+        <label><input type="checkbox" value="">Rangers</label>
+      </div>
     </div>
   </div>
   <div class="row">
     <div class="nodeMapDiv col-md-6">
-      <!--<input type="range" id="rangeslider" value="0" min="0" max="380" step="1">-->
+      <input type="range" id="rangeslider" value="0" min="0" max="380" step="1">
       <canvas width = "650" height = "650"></canvas> 
     </div>
     <div class="carDetails col-md-6">
+    </div>
+  </div>
+</div> -->
+
+<div class="container-fluid">
+  <h1>VAST Challenge MC#1</h1>
+  <h7>Dimitar Kirilov || Isabel Lindmae</h7><br><br>
+  <div class="row">
+    <div class="filters col-md-2">
+      <h4>Filter options</h4>
+      <hr>
+      <div class="AllVisitors checkbox">
+        <label><input type="checkbox" value="">Visitors</label>
+          <div class="StillThere checkbox">
+          <p class="tab">
+            <label><input type="checkbox" value="">Still in the park</label>
+          </p>
+          <p class="tab">
+            <label><input type="checkbox" value="">Out of the park</label>
+          </p>
+          
+          </div>
+      </div>
+      <div class="Rangers checkbox">
+        <label><input type="checkbox" value="">Rangers</label>
+      </div>
+    </div>
+    <div class="histogram col-md-6">
+    </div>
+    <div class="col-md-4">
+      <div class="row">
+        <div class="details col-md-12">
+        <h5>details go here</h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="nodeMapDiv col-md-12">
+          <!-- <h5>Map goes here</h5> -->
+          <input type="range" id="rangeslider" value="0" min="0" max="380" step="1">
+          <canvas width = "650" height = "650"></canvas> 
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -31,7 +31,7 @@ var DataLoader = function()
     self.createVis = function()
     {
         //self.createHeatMap();
-        //self.createNodeMap();
+        self.createNodeMap();
         //self.createTreeMap();
         self.createHistogram();
     }
