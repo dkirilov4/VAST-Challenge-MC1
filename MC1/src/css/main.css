@@ -98,7 +98,17 @@ p {
   fill: white;
 }
 
+.xAxis line
+{
+  stroke: white;
+}
+
 .yAxis text
 {
-  fill: white
+  fill: white;
+}
+
+.yAxis line
+{
+  stroke: white;
 }

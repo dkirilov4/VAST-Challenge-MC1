@@ -77,6 +77,8 @@ var Histogram = function()
                     .domain([0, binData[3].length]) // TODO: CHANGE
                     .range([0, svgHeight]);
 
+        var z = d3.scaleOrdinal(d3.schemeCategory20);
+
 
         var xAxisScale = d3.scaleBand()
                             .domain(["< 30 Min", "< 1 Hour", "< 1 Day", "< 1 Week", "> 1 Month"]) // TODO: CHANGE
@@ -90,18 +92,19 @@ var Histogram = function()
         var xAxis = d3.axisBottom(xAxisScale)
         var yAxis = d3.axisLeft(yAxisScale);
 
-        console.log(binData)
         svgContainer.selectAll(".bar")
                     .data(binData)
                     .enter()
                     .append("rect")
-                    .attr("transform", "translate(10, -10)")
+                    .attr("transform", "translate(4, 0)")
                     .attr("class", "bar")
                     .attr("width", (svgWidth / numBins) - 2)
                     .attr("height", function(d, i) { return y(binData[i].length) })
                     .attr("x", function(d, i) { return i * (svgWidth / numBins) - 2})
                     .attr("y", function(d, i) { return svgHeight - y(binData[i].length)})
                     .attr("fill", "steelblue")
+                    .on()
+
 
         svgContainer.append("g")
                     .attr("class", "xAxis")
