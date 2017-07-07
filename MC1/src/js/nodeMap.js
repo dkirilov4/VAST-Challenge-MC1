@@ -342,7 +342,7 @@ var NodeMap = function ()
             nodeData = nData
             vehicleData = vData;
             
-            self.createGraphView();
+            //self.createGraphView();
             self.createCanvas();
             self.createNodeMap();
         },

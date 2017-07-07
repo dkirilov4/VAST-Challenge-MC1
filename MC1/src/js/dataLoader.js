@@ -30,93 +30,47 @@ var DataLoader = function()
 
     self.createVis = function()
     {
-        /*
-        var maxLeftDate = 0;
-        var maxLeftID = ""
+        console.log(vehicleData);
 
-        var maxDate = 0;
-        var maxID = "";
-
-        var minDate = Infinity;
-        var minID = "";
+        var lessThanHour = []; // 0 - 3600
+        var lessThanDay  = []; // 0 - 86400
+        var lessThanWeek = []; // 0 - 604800
+        var lessThanMonth = []; // 0 - 2628000
+        var lessThanHalfYear = []; // 0 - 15770000
+        var lessThanYear = []; // 31540000
 
         for (var carID in vehicleData)
         {
-            var locLength = vehicleData[carID].Locations.length
-
-            var startDate = new Date(vehicleData[carID].Locations[0].Timestamp)
-            var endDate   = new Date(vehicleData[carID].Locations[locLength - 1].Timestamp)
-
-            var curDate = endDate - startDate;
-            if (curDate > maxDate)
-            {
-                maxID = carID;
-                maxDate = curDate;
-            }
-
-            if (curDate > maxLeftDate)
-            {
-                if (vehicleData[carID].Locations[locLength - 1].GateName.includes("entrance"))
-                {
-                    maxLeftID = carID;
-                    maxLeftDate = curDate;
-                }
-            }
-
-
-            if (curDate < minDate)
-            {
-                minID = carID;
-                minDate = curDate;
-            }
-
-            var entranceCount = 0;
-            for (var i = 0; i < vehicleData[carID].Locations.length; i++)
-            {
-                if (vehicleData[carID].Locations[i].GateName.includes("entrance"))
-                    entranceCount++;
-            }
-
-            if (entranceCount > 2)
-                console.log(vehicleData[carID])
-
-            // if (!vehicleData[carID].Locations[locLength - 1].GateName.includes("entrance"))
-            // {
-            //     if (vehicleData[carID].CarType != "2P")
-            //     {
-            //         console.log(vehicleData[carID])
-            //         console.log("No Exit")   
-            //     }             
-            // }
-
-            // if (!vehicleData[carID].Locations[0].GateName.includes("entrance"))
-            // {
-            //     if (vehicleData[carID].CarType != "2P")
-            //     {
-            //         console.log("No Entrance")
-            //         console.log(vehicleData[carID])   
-            //     }
-            // }
-            // console.log(vehicleData[carID].Locations[locLength - 1].Timestamp)
+            if (vehicleData[carID].TimeSpent < 3600)
+                lessThanHour.push(vehicleData[carID])
+            else if (vehicleData[carID].TimeSpent < 86400)
+                lessThanDay.push(vehicleData[carID])
+            else if (vehicleData[carID].TimeSpent < 604800)
+                lessThanWeek.push(vehicleData[carID])
+            else if (vehicleData[carID].TimeSpent < 2628000)
+                lessThanMonth.push(vehicleData[carID])
+            else if (vehicleData[carID].TimeSpent < 15770000)
+                lessThanHalfYear.push(vehicleData[carID])
+            else if (vehicleData[carID].TimeSpent < 31540000)
+                lessThanYear.push(vehicleData[carID])
         }
 
-        console.log("MIN:")
-        console.log(minID)
-        console.log(minDate)
+        console.log("< Hour:");
+        console.log(lessThanHour)
+        console.log("< Day:");
+        console.log(lessThanDay)
+        console.log("< Week:");
+        console.log(lessThanWeek)
+        console.log("< Month:");
+        console.log(lessThanMonth)
+        console.log("< 1/2 Year:");
+        console.log(lessThanHalfYear)
+        console.log("< Year:");
+        console.log(lessThanYear)
 
-        console.log("MAX:")
-        console.log(maxID)
-        console.log(maxDate)
-
-        console.log("MAX LEFT:")
-        console.log(maxLeftID)
-        console.log(maxLeftDate)
-        */
-
-
-        // self.createHeatMap();
-        // self.createNodeMap();
-        self.createTreeMap();
+        //self.createHeatMap();
+        //self.createNodeMap();
+        //self.createTreeMap();
     }
 
     //
@@ -139,7 +93,6 @@ var DataLoader = function()
     {
         var treeMap = new TreeMap();
         treeMap.createTreeMap(vehicleData);
-
     }
 
 
@@ -169,6 +122,7 @@ var DataLoader = function()
             self.loadVehicleData();
             self.loadDailyData();
             self.loadGateData();
+
             self.createVis();
         })
     };
@@ -304,8 +258,20 @@ var DataLoader = function()
             var endDate   = new Date(vehicleData[carID].Locations[locLength - 1].Timestamp)
 
             var curDate = endDate - startDate;
-            vehicleData[carID].TimeSpent = curDate;
+            vehicleData[carID].TimeSpent = curDate / 1000;
         }
+
+        var newVehicleData = [];
+        var i = 0;
+        for (var carID in vehicleData)
+        {
+            newVehicleData.push(vehicleData[carID]);
+            i++;
+            if (i > 1000)
+                break;
+        }
+
+        //vehicleData = newVehicleData;
     }
 
 

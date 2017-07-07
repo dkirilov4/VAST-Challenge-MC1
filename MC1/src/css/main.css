@@ -18,11 +18,11 @@ svg
     /*position: relative;*/
 }
 
-.heatMapDiv{
-  position: relative
-}
+/*.heatMapDiv-svg{
+  position: absolute;
+}*/
 
-.nodeMapDiv{
+.nodeMapDiv-svg{
   position: relative;
 }
 
