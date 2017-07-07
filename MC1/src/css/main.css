@@ -15,7 +15,7 @@ svg
 {
     background: transparent;
     font-family: helvetica, sans-serif;
-    /*position: relative;*/
+    /*position: absolute;*/
 }
 
 /*.heatMapDiv-svg{
@@ -28,10 +28,6 @@ svg
 
 .bargraph{
   background: white;
-}
-
-.bar:hover {
-  fill: brown;
 }
 
 circle {
@@ -87,4 +83,20 @@ canvas{
 }
 p {
     text-indent: 50px;
+}
+
+/* Histogram: */
+.bar:hover 
+{
+  fill: brown;
+}
+
+.xAxis text
+{
+  fill: white;
+}
+
+.yAxis text
+{
+  fill: white
 }

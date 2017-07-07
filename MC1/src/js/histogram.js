@@ -40,10 +40,8 @@ var Histogram = function()
                 lessThanDay.push(vehicleData[carID])
             else if (vehicleData[carID].TimeSpent < 604800)
                 lessThanWeek.push(vehicleData[carID])
-            else if (vehicleData[carID].TimeSpent < 2628000)
-                lessThanMonth.push(vehicleData[carID])
             else
-                lessThanHalfYear.push(vehicleData[carID])
+                lessThanMonth.push(vehicleData[carID])
         }
 
         binData.push(lessThanHalfHour)
@@ -51,7 +49,6 @@ var Histogram = function()
         binData.push(lessThanDay);
         binData.push(lessThanWeek);
         binData.push(lessThanMonth);
-        binData.push(lessThanYear)
     }
 
     self.createHistogram = function ()
@@ -64,7 +61,7 @@ var Histogram = function()
         var svgHeight = 500 - svgMargin.top - svgMargin.bottom;
 
 
-        var svgContainer = d3.select("body").append("svg")
+        var svgContainer = d3.select(".histogram").append("svg")
                                 .attr("width", svgWidth + svgMargin.left + svgMargin.right)
                                 .attr("height", svgHeight + svgMargin.top + svgMargin.bottom)
                                 .append("g")
@@ -80,19 +77,40 @@ var Histogram = function()
                     .domain([0, binData[3].length]) // TODO: CHANGE
                     .range([0, svgHeight]);
 
-        var xAxis = d3.axisBottom(x);
-	    var yAxis = d3.axisLeft(y);
 
+        var xAxisScale = d3.scaleBand()
+                            .domain(["< 30 Min", "< 1 Hour", "< 1 Day", "< 1 Week", "> 1 Month"]) // TODO: CHANGE
+                            .rangeRound([0, svgWidth]);
+
+        var yAxisScale = d3.scaleLinear()
+                            .domain([0, binData[3].length]) // TODO: CHANGE
+                            .range([svgHeight, 0]);
+	    
+                
+        var xAxis = d3.axisBottom(xAxisScale)
+        var yAxis = d3.axisLeft(yAxisScale);
+
+        console.log(binData)
         svgContainer.selectAll(".bar")
                     .data(binData)
                     .enter()
                     .append("rect")
+                    .attr("transform", "translate(10, -10)")
                     .attr("class", "bar")
                     .attr("width", (svgWidth / numBins) - 2)
                     .attr("height", function(d, i) { return y(binData[i].length) })
                     .attr("x", function(d, i) { return i * (svgWidth / numBins) - 2})
                     .attr("y", function(d, i) { return svgHeight - y(binData[i].length)})
                     .attr("fill", "steelblue")
+
+        svgContainer.append("g")
+                    .attr("class", "xAxis")
+                    .attr("transform", "translate(0," + svgHeight + ")")
+                    .call(xAxis);
+
+        svgContainer.append("g")
+                    .attr("class", "yAxis")
+                    .call(yAxis);
     }
 
     //
