@@ -24,7 +24,7 @@ var Histogram = function()
 
     // SVG Properties
     var svgContainer;
-    var svgMargin = { top: 50, left: 50, bottom: 50, right: 75 };
+    var svgMargin = { top: 100, left: 50, bottom: 50, right: 200 };
         
     var svgWidth = 960 - svgMargin.left - svgMargin.right;
     var svgHeight = 500 - svgMargin.top - svgMargin.bottom;
@@ -72,7 +72,7 @@ var Histogram = function()
 
         zoomOutButton = svgContainer.append("g")
                                 .attr("class", "zoomOutButton")
-                                .attr("transform", "translate(0, -" + buttonSize + ")")
+                                .attr("transform", "translate(0, -" + (buttonSize + buttonSize / 2) + ")")
                                 .on("mousedown", function() 
                                 {
                                     svgContainer.selectAll(".bar").remove();
@@ -440,6 +440,35 @@ var Histogram = function()
                     .call(yAxis);
     }
 
+    self.createLegend = function()
+    {
+        var colorScale = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494"];
+        var carTypes   = ["2 Axle Car / Motorcycle", "2 Axle Truck", "3 Axle Truck", "4+ Axle Truck", "2 Axle Bus", "3 Axle Bus", "Park Preserve Vehicle"]
+
+        var legendBinSize = 30;
+
+        svgContainer.selectAll("legendBin").data(colorScale).enter()
+                    .append("g")
+                    .attr("class", "legendBinGroup")
+                    .append("rect")
+                    .attr("class", "legendBin")
+                    .attr("x", svgWidth)
+                    .attr("y", function(d, i) { return svgHeight/4 - (i * legendBinSize)})
+                    .attr("width", legendBinSize)
+                    .attr("height", legendBinSize)
+                    .attr("fill", function(d) { return d} )
+
+        svgContainer.selectAll(".legendBinGroup")
+                    .data(carTypes)
+                    .append("text")
+                    .text(function(d) { return d})
+                    .attr("x", svgWidth + legendBinSize + 4)
+                    .attr("y", function(d, i) { return svgHeight/4 - (i * legendBinSize) + legendBinSize / 2})
+                    .attr("fill", "white")
+
+        
+    }
+
     //
     /* Publicly Available Functions: */
     //
@@ -452,6 +481,7 @@ var Histogram = function()
             self.populateBins();
             self.createSVGs();
             self.createHistogram();
+            self.createLegend();
         },
     };
 
