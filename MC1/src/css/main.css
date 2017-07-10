@@ -92,12 +92,12 @@ p {
 /* Histogram: */
 .bar:hover 
 {
-  fill: brown;
+  opacity: 0.5;
 }
 
 .barText:hover
 {
-  fill: brown;
+  opacity: 0.5;
 }
 
 .xAxis text
