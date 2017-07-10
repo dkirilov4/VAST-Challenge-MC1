@@ -87,8 +87,15 @@ p {
 
 .tab { margin-left: -60px; }
 
+/*
+ *
 /* Histogram: */
 .bar:hover 
+{
+  fill: brown;
+}
+
+.barText:hover
 {
   fill: brown;
 }
@@ -112,3 +119,22 @@ p {
 {
   stroke: white;
 }
+
+/* Zoom Out Button */
+.zoomOutButton
+{
+  fill:#d9534f;
+}
+
+.zoomOutButton:hover
+{
+  stroke: white;
+  stroke-width: 2px
+}
+
+.zoomOutButton text
+{
+  fill: white;
+  font-size: 80px
+}
+
