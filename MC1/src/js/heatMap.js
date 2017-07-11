@@ -29,11 +29,14 @@ var HeatMap = function()
     var colorScale;
 
     // SVG Properties:
+    var svgContainer;
+    var gContainer;
+    var heatMap;
+
     var margin = { top: 50, right: 10, bottom: 50, left: 50 };
     
     var height = cellSize * numCols;
     var width = cellSize * numRows;
-
     
     var getMinEntries = function()
     {
@@ -109,16 +112,16 @@ var HeatMap = function()
                 .domain([minEntries, maxEntries * (1/4), maxEntries * (2/4), maxEntries * (3/4), maxEntries])
                 .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
 
-        var svgContainer = d3.select(".heatMapDiv").append("svg")
+        svgContainer = d3.select(".heatMapDiv").append("svg")
                                 .attr("width", "90%")
                                 .attr("height", (numCols / numRows) * 400 + "%")
                                 .attr("viewBox", "0 0 " + (numRows * cellSize) + " " + (numCols * cellSize));
 
-        var gContainer = svgContainer.append("g")
+        gContainer = svgContainer.append("g")
                                 .attr("class", "heatMap")
                                 .attr("transform", "translate(" + margin.right + "," + margin.top + ")");
 
-        var heatMap = gContainer.selectAll(".dayGroup")
+        heatMap = gContainer.selectAll(".dayGroup")
                             .data(dailyData).enter()
                             .append("g")
                             .attr("class", "dayGroup")
@@ -137,14 +140,112 @@ var HeatMap = function()
                                     .append("title")
                                     .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings});
                             })
-                            .on("mousedown", handleMouseDown)
+                            .on("mousedown", function(d) { createZoomedHeatMap(d)})
+
+        var rowLabels = gContainer.append("g")
+                                    .attr("class", "rowLabels")
+                                    .selectAll(".rowLabel")
+                                    .data(gateData)
+                                    .enter()
+                                    .append("text")
+                                    .text(function(d) { return d; })
+                                    .attr("x", -90)
+                                    .attr("y", function(d, i) { return i * cellSize + cellSize})
+                                    .style("text-anchor", "start")
+                                    .attr("fill", "white")
+
+
+        var zoom = d3.zoom()
+            .scaleExtent([1, 50])
+            .on("zoom", function()
+            {
+                console.log("Zooming / Panning")
+
+                var e = d3.event
+                var width = document.getElementsByClassName("heatMapDiv")[0].clientWidth;
+                var height = document.getElementsByClassName("heatMapDiv")[0].clientHeight;
+                
+                // var tx = Math.min(0, Math.max(e.translate[0], width - width * e.transform.scale()));
+                // var ty = Math.min(0, Math.max(e.translate[1], height - height * e.transform.scale()));
+                gContainer.attr('transform', 'translate(' + d3.event.transform.x + ',' + d3.event.transform.y + ') scale(' + d3.event.transform.k + ')');
+                // gContainer.attr("transform", d3.event.transform);
+            })
+
+        gContainer.call(zoom)
     }
 
+    function createZoomedHeatMap(dayData)
+    {        
+        d3.selectAll(".dayGroup").remove();
 
-    function handleMouseDown(d)
-    {
-    	console.log("Pressed!");
-        
+        var minEntries = Infinity;
+        var maxEntries = 0;
+
+        var numGates = dayData.SensorData.length;
+        var timeSteps = 24;
+
+        for (var i = 0; i < numGates; i++)
+        {
+            for (var j = 0; j < timeSteps; j++)
+            {
+                var curValue = dayData.SensorData[i].Timestamps[j];
+
+                if (curValue < minEntries)
+                    minEntries = curValue;
+
+                if (curValue > maxEntries)
+                    maxEntries = curValue;
+            }
+        }
+
+        console.log(dayData);
+
+        colorScale = d3.scaleLinear()
+                .domain([minEntries, maxEntries * (1/4), maxEntries * (2/4), maxEntries * (3/4), maxEntries])
+                .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
+
+        heatMap = gContainer.selectAll(".hourGroup")
+                            .data(dayData.SensorData).enter()
+                            .append("g")
+                            .attr("class", "hourGroup")
+                            .attr("transform", function(d, i) {return "translate(0, " + i * cellSize + ")"})
+                            .each(function(d)
+                            {
+                                d3.select(this).selectAll(".hourlyBin")
+                                    .data(d.Timestamps)
+                                    .enter()
+                                    .append("rect")
+                                    .attr("class", "hourlyBin")
+                                    .attr("transform", function(d, i) { return "translate(" + i * cellSize + ", 0)"})
+                                    .attr("width", cellSize)
+                                    .attr("height", cellSize)
+                                    .attr("fill", function(d) { return (colorScale(d)) })
+                                    .append("title")
+                                    .text(function(x, i) { return "Gate: " + d.Gate + "\nHour: " + i + "\nPeople: " + x})
+                            })
+
+        console.log("Done");
+
+        // heatMap = gContainer.selectAll(".dayGroup")
+        //                     .data(dayData).enter()
+        //                     .append("g")
+        //                     .attr("class", "hourGroup")
+        //                     .attr("transform", function(d) {return "translate(" + cellSize * d.Day + ", 0)"})
+        //                     .each(function(d)
+        //                     {
+        //                         d3.select(this).selectAll(".bin")
+        //                             .data(d.SensorData)
+        //                             .enter()
+        //                             .append("rect")
+        //                             .attr("class", "bin")
+        //                             .attr("transform", function(d) {return "translate(0, " + gateData.indexOf(d.Gate) * cellSize + ")"})
+        //                             .attr("width", cellSize)
+        //                             .attr("height", cellSize)
+        //                             .attr("fill", function(d) { return getBinColor(d) })
+        //                             .append("title")
+        //                             .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings});
+        //                     })
+
     }
 
 

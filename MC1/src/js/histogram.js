@@ -412,6 +412,9 @@ var Histogram = function()
                         
 
                     })
+                    .on("mousedown", function(d){
+                        console.log(d)
+                    })
         // svgContainer.selectAll(".bar")
         //             .data(zoomedBins)
         //             .enter()

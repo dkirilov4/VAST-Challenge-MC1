@@ -30,10 +30,10 @@ var DataLoader = function()
 
     self.createVis = function()
     {
-        //self.createHeatMap();
+        self.createHeatMap();
         //self.createNodeMap();
         //self.createTreeMap();
-        self.createHistogram();
+        //self.createHistogram();
     }
 
     //
@@ -96,13 +96,24 @@ var DataLoader = function()
         })
     };
 
+    var createEmptyTimestampsArray = function()
+    {
+        var emptyTimestamps = [];
+        for (var i = 0; i < 24; i++)
+        {
+            emptyTimestamps[i] = 0;
+        }
+
+        return emptyTimestamps;
+    }
+
     // Create an array for each gate's readings
     var createEmptyGatesArray = function()
     {
         var emptyGates = [];
-
+        
         for (var i = 0; i < gateNames.length; i++)
-            emptyGates.push({Gate: gateNames[i], CarTypes: [], CarIDs: [], NumReadings: 0})
+            emptyGates.push({Gate: gateNames[i], CarTypes: [], CarIDs: [], Timestamps: createEmptyTimestampsArray(), NumReadings: 0})
 
         return emptyGates;
     }
@@ -136,8 +147,17 @@ var DataLoader = function()
                     {
                         if (dailyData[j].SensorData[k].Gate == rawData[i].GateName)
                         {
+                            var formatHour = d3.timeFormat("%H");
+                            var hour = parseInt(formatHour(new Date(rawData[i].Timestamp)));
+
+                            // if (dailyData[j].SensorData[k].Timestamps[hour] == "undefined")
+                            //     dailyData[j].SensorData[k].Timestamps[hour] = 0;
+
+                            dailyData[j].SensorData[k].Timestamps[hour]++;
+
                             dailyData[j].SensorData[k].CarIDs.push(rawData[i].CarID);
                             dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarType);
+                            // dailyData[j].SensorData[k].Timestamps.push(hour)
                             dailyData[j].SensorData[k].NumReadings++;
                         }
                     }

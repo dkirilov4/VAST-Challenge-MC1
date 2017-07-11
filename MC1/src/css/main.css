@@ -43,14 +43,6 @@ circle:hover {
   stroke: red;
 }
 
-.bin:hover
-{
-  /*fill: red !important;*/
-
-  stroke:red;
-  stroke-width: 2px;
-}
-
 .node {
   stroke: #000;
   stroke-width: 1.5px;
@@ -86,6 +78,34 @@ p {
 }
 
 .tab { margin-left: -60px; }
+
+/*
+ *
+/* HeatMap: */
+.bin:hover
+{
+  stroke:blue;
+  stroke-width: 2px;
+}
+
+.dayGroup:hover
+{
+  stroke: seagreen;
+  stroke-width: 4px;
+}
+
+.hourlyBin:hover
+{
+  stroke:blue;
+  stroke-width: 2px;
+}
+
+.hourGroup:hover
+{
+  stroke: seagreen;
+  stroke-width: 2px;
+}
+
 
 /*
  *

@@ -24,7 +24,7 @@ var Histogram = function()
 
     // SVG Properties
     var svgContainer;
-    var svgMargin = { top: 50, left: 50, bottom: 50, right: 75 };
+    var svgMargin = { top: 100, left: 50, bottom: 50, right: 200 };
         
     var svgWidth = 960 - svgMargin.left - svgMargin.right;
     var svgHeight = 500 - svgMargin.top - svgMargin.bottom;
@@ -72,7 +72,7 @@ var Histogram = function()
 
         zoomOutButton = svgContainer.append("g")
                                 .attr("class", "zoomOutButton")
-                                .attr("transform", "translate(0, -" + buttonSize + ")")
+                                .attr("transform", "translate(0, -" + (buttonSize + buttonSize / 2) + ")")
                                 .on("mousedown", function() 
                                 {
                                     svgContainer.selectAll(".bar").remove();
@@ -145,25 +145,75 @@ var Histogram = function()
                     .enter()
                     .append("g")
                     .attr("class", "barGroup")
-                    .append("rect")
-                    .attr("transform", "translate(4, 0)")
-                    .attr("class", "bar")
-                    .attr("width", (svgWidth / numBins) - 2)
-                    .attr("height", function(d, i) { return y(binData[i].length) })
-                    .attr("x", function(d, i) { return i * (svgWidth / numBins) - 2})
-                    .attr("y", function(d, i) { return svgHeight - y(binData[i].length)})
-                    .attr("fill", "steelblue")
-                    .on("mousedown", function(d, i) 
+                    .each(function(d, column)
                     {
-                        self.zoomHistogram(d, i);
+                        // var numType1  = 0;
+                        // var numType2  = 0;
+                        // var numType3  = 0;
+                        // var numType4  = 0;
+                        // var numType5  = 0;
+                        // var numType6  = 0;
+                        // var numType2P = 0;
+                        let counts = {};
+
+                        for (var i = 0; i < d.length; i++)
+                        {
+                            let type = d[i].CarType.toString();
+                            // console.log(type)
+                            if (typeof counts[type] !== "number"){
+                                counts[type] = 1;
+                            }else{
+                                counts[type] += 1;
+                            }
+                            
+                        }
+                        
+                        // console.log(counts)
+                        // console.log(Object.keys(counts).length)
+
+                        var yOffset = 0;
+                        for (var typeCount in counts)
+                        {
+                            d3.select(this).append("rect")
+                                            .attr("class", "bar")
+                                            .attr("width", (svgWidth / numBins) - 2)
+                                            .attr("height", function(d, i) 
+                                            { 
+                                                //console.log("HEIGHT: " + y(counts[typeCount]));
+                                                return y(counts[typeCount]) 
+                                            }) // Different
+                                            .attr("x", function(d) { return column * (svgWidth / numBins) - 2})
+                                            .attr("y", function(d, i) 
+                                            { 
+                                                var tempOffset = yOffset;
+                                                yOffset += y(counts[typeCount]);
+
+                                                //console.log("OFFSET: " + tempOffset)
+                                                //console.log("Y: " + y(counts[typeCount]));
+                                                return (svgHeight - y(counts[typeCount]) - tempOffset)
+                                            }) // Different
+                                            .attr("fill", function(d) { return "#" + z(typeCount.toString()) })
+                                            .on("mousedown", function(d) 
+                                            {
+                                                self.zoomHistogram(d, column);
+                                            })
+                        }
+                        //console.log("Bin Done")
+                        
+
                     })
-                    // .append("text")
+                    // .append("rect")
+                    // .attr("transform", "translate(4, 0)")
+                    // .attr("class", "bar")
+                    // .attr("width", (svgWidth / numBins) - 2)
+                    // .attr("height", function(d, i) { return y(binData[i].length) })
                     // .attr("x", function(d, i) { return i * (svgWidth / numBins) - 2})
-                    // .attr("y", function(d, i) { return svgHeight - y(binData[i].length) - 20})
-                    // .text(function(d) { return d.length})
-                    // .attr("fill", "white")
-                    // .attr("font-family", "sans-serif")
-                    // .attr("font-size", "20px")
+                    // .attr("y", function(d, i) { return svgHeight - y(binData[i].length)})
+                    // .attr("fill", "steelblue")
+                    // .on("mousedown", function(d, i) 
+                    // {
+                    //     self.zoomHistogram(d, i);
+                    // })
 
         svgContainer.selectAll(".barGroup")
                     .data(binData)
@@ -289,6 +339,10 @@ var Histogram = function()
         var y = d3.scaleLinear()
                     .domain([0, getYDomain(zoomedBins)]) // TODO: CHANGE
                     .range([0, svgHeight]);
+        
+        var z = d3.scaleOrdinal()
+                    .domain(["1", "2", "3", "4", "5", "6", "2P"])
+                    .range(["66c2a5", "fc8d62", "8da0cb", "e78ac3", "a6d854", "ffd92f", "e5c494"])
 
         //var z = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -306,18 +360,70 @@ var Histogram = function()
         svgContainer.select(".xAxis").remove();
         svgContainer.select(".yAxis").remove();
 
-        svgContainer.selectAll(".bar")
+       svgContainer.selectAll(".bar")
                     .data(zoomedBins)
                     .enter()
-                    .append("rect")
-                    //.attr("transform", "translate(4, 0)")
-                    .attr("class", "bar")
-                    .attr("width", (svgWidth / numBins) - 2)
-                    .attr("height", function(d, i) { return y(zoomedBins[i].length) })
-                    .attr("x", function(d, i) { return i * (svgWidth / numBins) })
-                    .attr("y", function(d, i) { return svgHeight - y(zoomedBins[i].length)})
-                    .attr("fill", "steelblue")
-                    .on("mousedown", function(d) { console.log(d)} )
+                    .append("g")
+                    .attr("class", "barGroup")
+                    .each(function(d, column)
+                    {
+                        console.log(d)
+                        let counts = {};
+
+                        for (var i = 0; i < d.length; i++)
+                        {
+                            let type = d[i].CarType.toString();
+                            // console.log(type)
+                            if (typeof counts[type] !== "number"){
+                                counts[type] = 1;
+                            }else{
+                                counts[type] += 1;
+                            }
+                            
+                        }
+                        
+                        // console.log(counts)
+                        // console.log(Object.keys(counts).length)
+
+                        var yOffset = 0;
+                        for (var typeCount in counts)
+                        {
+                            d3.select(this).append("rect")
+                                            .attr("class", "bar")
+                                            .attr("width", (svgWidth / numBins) - 2)
+                                            .attr("height", function(d, i) 
+                                            { 
+                                                //console.log("HEIGHT: " + y(counts[typeCount]));
+                                                return y(counts[typeCount]) 
+                                            }) // Different
+                                            .attr("x", function(d) { return column * (svgWidth / numBins) - 2})
+                                            .attr("y", function(d, i) 
+                                            { 
+                                                var tempOffset = yOffset;
+                                                yOffset += y(counts[typeCount]);
+
+                                                //console.log("OFFSET: " + tempOffset)
+                                                //console.log("Y: " + y(counts[typeCount]));
+                                                return (svgHeight - y(counts[typeCount]) - tempOffset)
+                                            }) // Different
+                                            .attr("fill", function(d) { return "#" + z(typeCount.toString()) })
+                        }
+                        console.log("Bin Done")
+                        
+
+                    })
+        // svgContainer.selectAll(".bar")
+        //             .data(zoomedBins)
+        //             .enter()
+        //             .append("rect")
+        //             //.attr("transform", "translate(4, 0)")
+        //             .attr("class", "bar")
+        //             .attr("width", (svgWidth / numBins) - 2)
+        //             .attr("height", function(d, i) { return y(zoomedBins[i].length) })
+        //             .attr("x", function(d, i) { return i * (svgWidth / numBins) })
+        //             .attr("y", function(d, i) { return svgHeight - y(zoomedBins[i].length)})
+        //             .attr("fill", "steelblue")
+        //             .on("mousedown", function(d) { console.log(d)} )
 
 
         svgContainer.append("g")
@@ -334,6 +440,35 @@ var Histogram = function()
                     .call(yAxis);
     }
 
+    self.createLegend = function()
+    {
+        var colorScale = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494"];
+        var carTypes   = ["2 Axle Car / Motorcycle", "2 Axle Truck", "3 Axle Truck", "4+ Axle Truck", "2 Axle Bus", "3 Axle Bus", "Park Preserve Vehicle"]
+
+        var legendBinSize = 30;
+
+        svgContainer.selectAll("legendBin").data(colorScale).enter()
+                    .append("g")
+                    .attr("class", "legendBinGroup")
+                    .append("rect")
+                    .attr("class", "legendBin")
+                    .attr("x", svgWidth)
+                    .attr("y", function(d, i) { return svgHeight/4 - (i * legendBinSize)})
+                    .attr("width", legendBinSize)
+                    .attr("height", legendBinSize)
+                    .attr("fill", function(d) { return d} )
+
+        svgContainer.selectAll(".legendBinGroup")
+                    .data(carTypes)
+                    .append("text")
+                    .text(function(d) { return d})
+                    .attr("x", svgWidth + legendBinSize + 4)
+                    .attr("y", function(d, i) { return svgHeight/4 - (i * legendBinSize) + legendBinSize / 2})
+                    .attr("fill", "white")
+
+        
+    }
+
     //
     /* Publicly Available Functions: */
     //
@@ -346,6 +481,7 @@ var Histogram = function()
             self.populateBins();
             self.createSVGs();
             self.createHistogram();
+            self.createLegend();
         },
     };
 
