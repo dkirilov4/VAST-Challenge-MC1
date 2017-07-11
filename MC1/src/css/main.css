@@ -91,7 +91,7 @@ p {
 .dayGroup:hover
 {
   stroke: seagreen;
-  stroke-width: 4px;
+  stroke-width: 2px;
 }
 
 .hourlyBin:hover

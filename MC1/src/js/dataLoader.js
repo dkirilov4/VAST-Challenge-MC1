@@ -30,10 +30,11 @@ var DataLoader = function()
 
     self.createVis = function()
     {
-        self.createHeatMap();
+        // self.createHeatMap();
         //self.createNodeMap();
         //self.createTreeMap();
-        //self.createHistogram();
+        self.createHistogram();
+        //self.createSecondHistogram();
     }
 
     //
@@ -62,6 +63,12 @@ var DataLoader = function()
     {
         var histogram = new Histogram();
         histogram.createHistogram(vehicleData);
+    }
+
+    self.createSecondHistogram = function()
+    {
+        var gateHistogram = new GateHistogram();
+        gateHistogram.createHistogram(vehicleData);
     }
 
 

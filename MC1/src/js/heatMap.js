@@ -33,7 +33,7 @@ var HeatMap = function()
     var gContainer;
     var heatMap;
 
-    var margin = { top: 50, right: 10, bottom: 50, left: 50 };
+    var margin = { top: 50, right: 100, bottom: 50, left: 50 };
     
     var height = cellSize * numCols;
     var width = cellSize * numRows;
@@ -113,9 +113,9 @@ var HeatMap = function()
                 .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
 
         svgContainer = d3.select(".heatMapDiv").append("svg")
-                                .attr("width", "90%")
-                                .attr("height", (numCols / numRows) * 400 + "%")
-                                .attr("viewBox", "0 0 " + (numRows * cellSize) + " " + (numCols * cellSize));
+                                .attr("width", width)
+                                .attr("height", height)
+                                //.attr("viewBox", "0 0 " + (numRows * cellSize) + " " + (numCols * cellSize));
 
         gContainer = svgContainer.append("g")
                                 .attr("class", "heatMap")
@@ -137,10 +137,12 @@ var HeatMap = function()
                                     .attr("width", cellSize)
                                     .attr("height", cellSize)
                                     .attr("fill", function(d) { return getBinColor(d) })
+                                    .on("mouseover", function(x) { d3.select("." + x.Gate).attr("fill", "green")})
+                                    .on("mouseout", function(x) { d3.select("." + x.Gate).attr("fill", "white")})
                                     .append("title")
-                                    .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings});
+                                    .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings})
                             })
-                            .on("mousedown", function(d) { createZoomedHeatMap(d)})
+                            .on("contextmenu", function(d) { createZoomedHeatMap(d)})
 
         var rowLabels = gContainer.append("g")
                                     .attr("class", "rowLabels")
@@ -148,12 +150,12 @@ var HeatMap = function()
                                     .data(gateData)
                                     .enter()
                                     .append("text")
+                                    .attr("class", function(d) { return d} )
                                     .text(function(d) { return d; })
                                     .attr("x", -90)
                                     .attr("y", function(d, i) { return i * cellSize + cellSize})
                                     .style("text-anchor", "start")
                                     .attr("fill", "white")
-
 
         var zoom = d3.zoom()
             .scaleExtent([1, 50])
@@ -161,14 +163,17 @@ var HeatMap = function()
             {
                 console.log("Zooming / Panning")
 
-                var e = d3.event
                 var width = document.getElementsByClassName("heatMapDiv")[0].clientWidth;
                 var height = document.getElementsByClassName("heatMapDiv")[0].clientHeight;
                 
-                // var tx = Math.min(0, Math.max(e.translate[0], width - width * e.transform.scale()));
-                // var ty = Math.min(0, Math.max(e.translate[1], height - height * e.transform.scale()));
-                gContainer.attr('transform', 'translate(' + d3.event.transform.x + ',' + d3.event.transform.y + ') scale(' + d3.event.transform.k + ')');
-                // gContainer.attr("transform", d3.event.transform);
+                var tx = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
+                var ty = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
+
+                console.log("TX: " + tx)
+                console.log("TY: " + ty)
+
+                //gContainer.attr('transform', 'translate(' + tx + ',' + ty + ') scale(' + d3.event.transform.k + ')');
+                 gContainer.attr("transform", d3.event.transform);
             })
 
         gContainer.call(zoom)
@@ -176,6 +181,7 @@ var HeatMap = function()
 
     function createZoomedHeatMap(dayData)
     {        
+        d3.event.preventDefault();
         d3.selectAll(".dayGroup").remove();
 
         var minEntries = Infinity;
@@ -219,6 +225,8 @@ var HeatMap = function()
                                     .attr("transform", function(d, i) { return "translate(" + i * cellSize + ", 0)"})
                                     .attr("width", cellSize)
                                     .attr("height", cellSize)
+                                    .on("mouseover", function(x) { d3.select("." + d.Gate).attr("fill", "green")})
+                                    .on("mouseout", function(x) { d3.select("." + d.Gate).attr("fill", "white")})
                                     .attr("fill", function(d) { return (colorScale(d)) })
                                     .append("title")
                                     .text(function(x, i) { return "Gate: " + d.Gate + "\nHour: " + i + "\nPeople: " + x})
