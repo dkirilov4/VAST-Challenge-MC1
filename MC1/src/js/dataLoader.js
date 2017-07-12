@@ -30,11 +30,11 @@ var DataLoader = function()
 
     self.createVis = function()
     {
-        // self.createHeatMap();
+        self.createHeatMap();
         //self.createNodeMap();
         //self.createTreeMap();
         self.createHistogram();
-        //self.createSecondHistogram();
+        // self.createSecondHistogram();
     }
 
     //

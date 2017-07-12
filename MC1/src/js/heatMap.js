@@ -24,16 +24,23 @@ var HeatMap = function()
     var numRows = 396;      // Number of Days
     var numCols = 40;       // Number of Gates
 
-    var cellSize = 12;
+    var cellSize = 3;
+    var miniCellSize = 12;
 
     var colorScale;
 
     // SVG Properties:
     var svgContainer;
-    var gContainer;
+    var zoomedSvgContainer;
     var heatMap;
+    var rowLabels; 
+    var colLabels;
 
-    var margin = { top: 50, right: 100, bottom: 50, left: 50 };
+    var gContainer;
+    var zoomedGContainer;
+    var miniColLabels;
+
+    var margin = { top: 40, right: 20, bottom: 40, left: 20 };
     
     var height = cellSize * numCols;
     var width = cellSize * numRows;
@@ -114,12 +121,20 @@ var HeatMap = function()
 
         svgContainer = d3.select(".heatMapDiv").append("svg")
                                 .attr("width", width)
-                                .attr("height", height)
+                                .attr("height", height + margin.bottom + margin.top)
                                 //.attr("viewBox", "0 0 " + (numRows * cellSize) + " " + (numCols * cellSize));
 
         gContainer = svgContainer.append("g")
                                 .attr("class", "heatMap")
                                 .attr("transform", "translate(" + margin.right + "," + margin.top + ")");
+
+        zoomedSvgContainer = d3.select(".miniHeatMapDiv").append("svg")
+                                .attr("width", 24 * miniCellSize)
+                                .attr("height", 40 * miniCellSize + margin.bottom + margin.top)
+
+        zoomedGContainer = zoomedSvgContainer.append("g")
+                                .attr("class", "miniHeatMap")
+                                .attr("transform", "translate(" + 0 + "," + margin.top + ")");
 
         heatMap = gContainer.selectAll(".dayGroup")
                             .data(dailyData).enter()
@@ -137,14 +152,26 @@ var HeatMap = function()
                                     .attr("width", cellSize)
                                     .attr("height", cellSize)
                                     .attr("fill", function(d) { return getBinColor(d) })
-                                    .on("mouseover", function(x) { d3.select("." + x.Gate).attr("fill", "green")})
-                                    .on("mouseout", function(x) { d3.select("." + x.Gate).attr("fill", "white")})
+                                    .on("mouseover", function(x) 
+                                    { 
+                                        d3.select("." + x.Gate).attr("fill", "green")
+                                        var selectedDate = "._" + d.Date.replace(/\//g, "_")
+                                        d3.select(selectedDate).attr("fill", "green")
+                                    })
+                                    .on("mouseout", function(x) 
+                                    { 
+                                        d3.select("." + x.Gate).attr("fill", "white")
+                                        d3.select("._" + d.Date.replace(/\//g, "_")).attr("fill", "white")
+                                    })
                                     .append("title")
                                     .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings})
                             })
-                            .on("contextmenu", function(d) { createZoomedHeatMap(d)})
+                            .on("contextmenu", function(d) 
+                            { 
+                                d3.event.preventDefault();
+                                createZoomedHeatMap(d)})
 
-        var rowLabels = gContainer.append("g")
+        rowLabels = gContainer.append("g")
                                     .attr("class", "rowLabels")
                                     .selectAll(".rowLabel")
                                     .data(gateData)
@@ -152,10 +179,27 @@ var HeatMap = function()
                                     .append("text")
                                     .attr("class", function(d) { return d} )
                                     .text(function(d) { return d; })
-                                    .attr("x", -90)
+                                    .attr("x", -16)
                                     .attr("y", function(d, i) { return i * cellSize + cellSize})
                                     .style("text-anchor", "start")
                                     .attr("fill", "white")
+                                    .attr("font-size", "2px")
+
+        console.log(dailyData);
+        colLabels = gContainer.append("g")
+                                .attr("class", "colLabels")
+                                .selectAll(".colLabel")
+                                .data(dailyData)
+                                .enter()
+                                .append("text")
+                                .attr("class", function(d) { return "_" + d.Date.replace(/\//g, "_"); })
+                                .text(function(d) { return d.Date; })
+                                .attr("transform", "rotate(-90)")   // FIX ROTATION PER ELEMENT?
+                                .attr("y", function(d) { return (d.Day * cellSize) + cellSize} )
+                                .attr("x", 5)
+                                .attr("fill", "white")
+                                .attr("font-size", "2px")
+
 
         var zoom = d3.zoom()
             .scaleExtent([1, 50])
@@ -172,17 +216,16 @@ var HeatMap = function()
                 console.log("TX: " + tx)
                 console.log("TY: " + ty)
 
-                //gContainer.attr('transform', 'translate(' + tx + ',' + ty + ') scale(' + d3.event.transform.k + ')');
-                 gContainer.attr("transform", d3.event.transform);
+                // gContainer.attr('transform', 'translate(' + tx + margin.right + ',' + ty + margin.top + ') scale(' + d3.event.transform.k + ')');
+                gContainer.attr("transform", d3.event.transform);
             })
 
         gContainer.call(zoom)
     }
 
     function createZoomedHeatMap(dayData)
-    {        
-        d3.event.preventDefault();
-        d3.selectAll(".dayGroup").remove();
+    {   
+        d3.selectAll(".hourGroup").remove();
 
         var minEntries = Infinity;
         var maxEntries = 0;
@@ -210,11 +253,11 @@ var HeatMap = function()
                 .domain([minEntries, maxEntries * (1/4), maxEntries * (2/4), maxEntries * (3/4), maxEntries])
                 .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
 
-        heatMap = gContainer.selectAll(".hourGroup")
+        heatMap = zoomedGContainer.selectAll(".hourGroup")
                             .data(dayData.SensorData).enter()
                             .append("g")
                             .attr("class", "hourGroup")
-                            .attr("transform", function(d, i) {return "translate(0, " + i * cellSize + ")"})
+                            .attr("transform", function(d, i) {return "translate(0, " + i * miniCellSize + ")"})
                             .each(function(d)
                             {
                                 d3.select(this).selectAll(".hourlyBin")
@@ -222,15 +265,53 @@ var HeatMap = function()
                                     .enter()
                                     .append("rect")
                                     .attr("class", "hourlyBin")
-                                    .attr("transform", function(d, i) { return "translate(" + i * cellSize + ", 0)"})
-                                    .attr("width", cellSize)
-                                    .attr("height", cellSize)
+                                    .attr("transform", function(d, i) { return "translate(" + i * miniCellSize + ", 0)"})
+                                    .attr("width", miniCellSize)
+                                    .attr("height", miniCellSize)
                                     .on("mouseover", function(x) { d3.select("." + d.Gate).attr("fill", "green")})
                                     .on("mouseout", function(x) { d3.select("." + d.Gate).attr("fill", "white")})
                                     .attr("fill", function(d) { return (colorScale(d)) })
                                     .append("title")
                                     .text(function(x, i) { return "Gate: " + d.Gate + "\nHour: " + i + "\nPeople: " + x})
                             })
+
+        var hours = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
+                     "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "24:00"]
+
+        miniColLabels = zoomedSvgContainer.append("g")
+                                .attr("class", "hourColLabels")
+                                .selectAll(".hourColLabel")
+                                .data(hours)
+                                .enter()
+                                .append("text")
+                                // .attr("class", function(d) { return "_" + d.Date.replace(/:/g, "_"); })
+                                .text(function(d) { return d; })
+                                .attr("transform", "rotate(-90)")   // FIX ROTATION PER ELEMENT?
+                                .attr("x",  (miniCellSize * (-3)))
+                                .attr("y", function(d, i) { return (i * miniCellSize) + miniCellSize})
+                                .attr("fill", "white")
+                                .attr("font-size", "10px")
+
+        // var zoom = d3.zoom()
+        //     .scaleExtent([1, 50])
+        //     .on("zoom", function()
+        //     {
+        //         console.log("Zooming / Panning")
+
+        //         var width = document.getElementsByClassName("miniHeatMapDiv")[0].clientWidth;
+        //         var height = document.getElementsByClassName("miniHeatMapDiv")[0].clientHeight;
+                
+        //         var tx = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
+        //         var ty = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
+
+        //         console.log("TX: " + tx)
+        //         console.log("TY: " + ty)
+
+        //         // gContainer.attr('transform', 'translate(' + tx + margin.right + ',' + ty + margin.top + ') scale(' + d3.event.transform.k + ')');
+        //         zoomedGContainer.attr("transform", d3.event.transform);
+        //     })
+
+        // zoomedGContainer.call(zoom)
 
         console.log("Done");
 
@@ -269,6 +350,7 @@ var HeatMap = function()
             gateData = gData;
 
             self.createHeatMap();
+            createZoomedHeatMap(dailyData[100])
         },
     };
 

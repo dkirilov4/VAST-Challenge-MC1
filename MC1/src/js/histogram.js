@@ -21,15 +21,18 @@ var Histogram = function()
     var lessThanYear = []; // 31540000
 
     var binData = [];
+    var gateBinData = [];
 
     // SVG Properties
     var svgContainer;
     var svgMargin = { top: 100, left: 50, bottom: 50, right: 200 };
         
-    var svgWidth = 960 - svgMargin.left - svgMargin.right;
-    var svgHeight = 500 - svgMargin.top - svgMargin.bottom;
+    var svgWidth = 720 - svgMargin.left - svgMargin.right;
+    var svgHeight = 405 - svgMargin.top - svgMargin.bottom;
 
     // Zoom Out Button Properties
+    var legend;
+    var legendText;
     var zoomOutButton;
     var buttonSize = 50;
 
@@ -62,9 +65,34 @@ var Histogram = function()
         binData.push(lessThanYear);
     }
 
+    self.populateGateBins = function()
+    {
+        for (var i = 0; i < 33; i++)
+        {
+            if (!gateBinData[i.toString()])
+                gateBinData[i.toString()] = 0;
+        }
+        
+        for (var carID in vehicleData)
+        {
+            // console.log(vehicleData[carID].Locations)
+            var numEntrances = 0;
+            for (var i = 0; i < vehicleData[carID].Locations.length; i++)
+            {
+                if (vehicleData[carID].Locations[i].GateName.includes("entrance"))
+                    numEntrances++;
+            }
+
+            if (!gateBinData[numEntrances.toString()])
+                gateBinData[numEntrances.toString()] = 0;
+
+            gateBinData[numEntrances.toString()]++;
+        }
+    }
+
     self.createSVGs = function()
     {
-        svgContainer = d3.select(".histogram").append("svg")
+        svgContainer = d3.select(".histogramDiv").append("svg")
                                 .attr("width", svgWidth + svgMargin.left + svgMargin.right)
                                 .attr("height", svgHeight + svgMargin.top + svgMargin.bottom)
                                 .append("g")
@@ -182,7 +210,7 @@ var Histogram = function()
                                                 //console.log("HEIGHT: " + y(counts[typeCount]));
                                                 return y(counts[typeCount]) 
                                             }) // Different
-                                            .attr("x", function(d) { return column * (svgWidth / numBins) - 2})
+                                            .attr("x", function(d) { return column * (svgWidth / numBins)})
                                             .attr("y", function(d, i) 
                                             { 
                                                 var tempOffset = yOffset;
@@ -219,10 +247,9 @@ var Histogram = function()
                     .data(binData)
                     .append("text")
                     .attr("class", "barText")
-                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2) - 10})
+                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2)})
                     .attr("y", function(d, i) { return svgHeight - y(binData[i].length) - 10})
                     .attr("text-anchor", "middle")
-                    .attr("dx", 10)
                     // .attr("dx", svgWidth / numBins / 2)
                     .text(function(d) { return d.length})
                     .attr("font-size", "20px")
@@ -370,7 +397,7 @@ var Histogram = function()
                     .attr("class", "barGroup")
                     .each(function(d, column)
                     {
-                        console.log(d)
+                        //console.log(d)
                         let counts = {};
 
                         for (var i = 0; i < d.length; i++)
@@ -399,7 +426,7 @@ var Histogram = function()
                                                 //console.log("HEIGHT: " + y(counts[typeCount]));
                                                 return y(counts[typeCount]) 
                                             }) // Different
-                                            .attr("x", function(d) { return column * (svgWidth / numBins) - 2})
+                                            .attr("x", function(d) { return column * (svgWidth / numBins)})
                                             .attr("y", function(d, i) 
                                             { 
                                                 var tempOffset = yOffset;
@@ -411,12 +438,12 @@ var Histogram = function()
                                             }) // Different
                                             .attr("fill", function(d) { return "#" + z(typeCount.toString()) })
                         }
-                        console.log("Bin Done")
+                        //console.log("Bin Done")
                         
 
                     })
                     .on("mousedown", function(d){
-                        console.log(d)
+                        //console.log(d)
                     })
         // svgContainer.selectAll(".bar")
         //             .data(zoomedBins)
@@ -430,6 +457,18 @@ var Histogram = function()
         //             .attr("y", function(d, i) { return svgHeight - y(zoomedBins[i].length)})
         //             .attr("fill", "steelblue")
         //             .on("mousedown", function(d) { console.log(d)} )
+        console.log(zoomedBins)
+        svgContainer.selectAll(".barGroup")
+                    .data(zoomedBins)
+                    .append("text")
+                    .attr("class", "barText")
+                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2)})
+                    .attr("y", function(d, i) { return svgHeight - y(zoomedBins[i].length) - 10})
+                    .attr("text-anchor", "middle")
+                    // .attr("dx", svgWidth / numBins / 2)
+                    .text(function(d) { return d.length})
+                    .attr("font-size", "10px")
+                    .attr("fill", "white")
 
 
         svgContainer.append("g")
@@ -446,14 +485,82 @@ var Histogram = function()
                     .call(yAxis);
     }
 
+    self.createGateHistogram = function ()
+    {
+        console.log("Creating Second Histogram...");
+
+        var numBins = 33;
+
+        var x = d3.scaleBand()
+                    .domain([0, 32]) // TODO: CHANGE
+                    .rangeRound([0, svgWidth]);
+
+        var y = d3.scaleLinear()
+                    .domain([18000,  0]) // TODO: CHANGE
+                    .range([svgHeight, 0]);
+
+        console.log(gateBinData)
+        svgContainer.selectAll(".bar")
+                    .data(Object.keys(gateBinData))
+                    .enter()
+                    .append("g")
+                    .attr("class", "barGroup")
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2)})
+                    .attr("y", function(d, i) { return svgHeight - y(gateBinData[d]) })
+                    .attr("width", (svgWidth / numBins))
+                    .attr("height", function(d) { return y(gateBinData[d])} )
+                    .attr("fill", "steelblue")
+
+        svgContainer.selectAll(".barGroup")
+                    .data(Object.keys(gateBinData))
+                    .append("text")
+                    .text(function(d) 
+                    { 
+                        if (gateBinData[d] == 0) 
+                            return "";
+                        return gateBinData[d];
+                    })
+                    .attr("class", "barText")
+                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2)})
+                    .attr("y", function(d, i) { return svgHeight - y(gateBinData[d]) })
+                    .attr("font-size", "10px")
+                    .attr("fill", "white")
+                    .attr("text-anchor", "middle")
+                    .attr("dx", svgWidth / numBins / 2)
+                    .attr("dy", -10)
+
+        var xAxisScale = d3.scaleLinear()
+                            .domain([-1, 32]) // TODO: CHANGE
+                            .rangeRound([0, svgWidth]);
+
+        var yAxisScale = d3.scaleLinear()
+                            .domain([0,  18000]) // TODO: CHANGE
+                            .range([svgHeight, 0]);
+                    
+
+        var xAxis = d3.axisBottom(xAxisScale).ticks(32)
+        var yAxis = d3.axisLeft(yAxisScale);
+
+        svgContainer.append("g")
+                    .attr("class", "xAxis")
+                    .attr("transform", "translate(0," + svgHeight + ")")
+                    .call(xAxis);
+
+        svgContainer.append("g")
+                    .attr("class", "yAxis")
+                    .call(yAxis);
+    }
+
     self.createLegend = function()
     {
         var colorScale = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494"];
         var carTypes   = ["2 Axle Car / Motorcycle", "2 Axle Truck", "3 Axle Truck", "4+ Axle Truck", "2 Axle Bus", "3 Axle Bus", "Park Preserve Vehicle"]
 
-        var legendBinSize = 30;
+        var legendBinSize = 15;
 
-        svgContainer.selectAll("legendBin").data(colorScale).enter()
+        legend = svgContainer.selectAll("legendBin").data(colorScale).enter()
                     .append("g")
                     .attr("class", "legendBinGroup")
                     .append("rect")
@@ -464,15 +571,44 @@ var Histogram = function()
                     .attr("height", legendBinSize)
                     .attr("fill", function(d) { return d} )
 
-        svgContainer.selectAll(".legendBinGroup")
+        legendText = svgContainer.selectAll(".legendBinGroup")
                     .data(carTypes)
                     .append("text")
                     .text(function(d) { return d})
                     .attr("x", svgWidth + legendBinSize + 4)
-                    .attr("y", function(d, i) { return svgHeight/4 - (i * legendBinSize) + legendBinSize / 2})
+                    .attr("y", function(d, i) { return svgHeight/4 - (i * legendBinSize) + legendBinSize / 2 + 6})
                     .attr("fill", "white")
 
         
+    }
+
+    document.getElementById("gateEntriesCheckbox").addEventListener("change", filterHistograms, false);
+    function filterHistograms()
+    {
+        var checked = document.getElementById("gateEntriesCheckbox").checked;
+
+        if (checked)
+        {
+            svgContainer.selectAll(".bar").remove();
+            svgContainer.selectAll(".barText").remove()
+            svgContainer.selectAll(".barGroup").remove();
+            svgContainer.selectAll(".legendBinGroup").remove();
+            svgContainer.select(".xAxis").remove()
+            svgContainer.select(".yAxis").remove()
+            zoomOutButton.remove();
+            legend.remove();
+            legendText.remove();
+
+            self.createGateHistogram();
+        }
+        else
+        {
+            svgContainer.selectAll(".barGroup").remove();
+            svgContainer.select(".xAxis").remove()
+            svgContainer.select(".yAxis").remove()
+
+            self.createHistogram();
+        }
     }
 
     //
@@ -485,6 +621,7 @@ var Histogram = function()
             vehicleData = vData;
 
             self.populateBins();
+            self.populateGateBins();
             self.createSVGs();
             self.createHistogram();
             self.createLegend();

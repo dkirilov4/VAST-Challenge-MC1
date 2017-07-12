@@ -12,26 +12,26 @@ var GateHistogram = function()
 
 	var vehicleData = [];
 
-    var binData = {};
+    var gateBinData = {};
 
     // SVG Properties
     var svgContainer;
     var svgMargin = { top: 100, left: 50, bottom: 50, right: 200 };
         
-    var svgWidth = 960 - svgMargin.left - svgMargin.right;
-    var svgHeight = 500 - svgMargin.top - svgMargin.bottom;
+    var svgWidth = 720 - svgMargin.left - svgMargin.right;
+    var svgHeight = 405 - svgMargin.top - svgMargin.bottom;
 
     // Zoom Out Button Properties
 
     //
     /* Histogram */
     //
-    self.populateBins = function()
+    self.populateGateBins = function()
     {
         for (var i = 0; i < 33; i++)
         {
-            if (!binData[i.toString()])
-                binData[i.toString()] = 0;
+            if (!gateBinData[i.toString()])
+                gateBinData[i.toString()] = 0;
         }
         
         for (var carID in vehicleData)
@@ -44,26 +44,23 @@ var GateHistogram = function()
                     numEntrances++;
             }
 
-            if (!binData[numEntrances.toString()])
-                binData[numEntrances.toString()] = 0;
+            if (!gateBinData[numEntrances.toString()])
+                gateBinData[numEntrances.toString()] = 0;
 
-            binData[numEntrances.toString()]++;
+            gateBinData[numEntrances.toString()]++;
         }
-
-        console.log(binData)
-
     }
 
     self.createSVGs = function()
     {
-        svgContainer = d3.select(".histogram").append("svg")
+        svgContainer = d3.select(".histogramDiv").append("svg")
                                 .attr("width", svgWidth + svgMargin.left + svgMargin.right)
                                 .attr("height", svgHeight + svgMargin.top + svgMargin.bottom)
                                 .append("g")
                                 .attr("transform","translate(" + svgMargin.left + "," + svgMargin.top + ")");
     }
 
-    self.createHistogram = function ()
+    self.createGateHistogram = function ()
     {
         console.log("Creating Second Histogram...");
 
@@ -78,30 +75,30 @@ var GateHistogram = function()
                     .range([svgHeight, 0]);
 
         svgContainer.selectAll(".bar")
-                    .data(Object.keys(binData))
+                    .data(Object.keys(gateBinData))
                     .enter()
                     .append("g")
                     .attr("class", "barGroup")
                     .append("rect")
                     .attr("class", "bar")
-                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2) - 10})
-                    .attr("y", function(d, i) { return svgHeight - y(binData[d]) })
-                    .attr("width", (svgWidth / numBins) - 2)
-                    .attr("height", function(d) { return y(binData[d])} )
+                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2)})
+                    .attr("y", function(d, i) { return svgHeight - y(gateBinData[d]) })
+                    .attr("width", (svgWidth / numBins))
+                    .attr("height", function(d) { return y(gateBinData[d])} )
                     .attr("fill", "steelblue")
 
         svgContainer.selectAll(".barGroup")
-                    .data(Object.keys(binData))
+                    .data(Object.keys(gateBinData))
                     .append("text")
                     .text(function(d) 
                     { 
-                        if (binData[d] == 0) 
+                        if (gateBinData[d] == 0) 
                             return "";
-                        return binData[d];
+                        return gateBinData[d];
                     })
                     .attr("class", "barText")
-                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2) - 10})
-                    .attr("y", function(d, i) { return svgHeight - y(binData[d]) })
+                    .attr("x", function(d, i) { return i * (svgWidth / numBins) + ((svgWidth / numBins) / 2)})
+                    .attr("y", function(d, i) { return svgHeight - y(gateBinData[d]) })
                     .attr("font-size", "10px")
                     .attr("fill", "white")
                     .attr("text-anchor", "middle")
@@ -109,7 +106,7 @@ var GateHistogram = function()
                     .attr("dy", -10)
 
         var xAxisScale = d3.scaleLinear()
-                            .domain([0, 33]) // TODO: CHANGE
+                            .domain([-1, 32]) // TODO: CHANGE
                             .rangeRound([0, svgWidth]);
 
         var yAxisScale = d3.scaleLinear()
@@ -117,7 +114,7 @@ var GateHistogram = function()
                             .range([svgHeight, 0]);
                     
 
-        var xAxis = d3.axisBottom(xAxisScale).ticks(33)
+        var xAxis = d3.axisBottom(xAxisScale).ticks(32)
         var yAxis = d3.axisLeft(yAxisScale);
 
         svgContainer.append("g")

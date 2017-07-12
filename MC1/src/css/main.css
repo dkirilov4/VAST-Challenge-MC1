@@ -82,28 +82,33 @@ p {
 /*
  *
 /* HeatMap: */
+.miniHeatMap
+{
+  background: white
+}
+
 .bin:hover
 {
   stroke:blue;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 .dayGroup:hover
 {
   stroke: seagreen;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 .hourlyBin:hover
 {
   stroke:blue;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 .hourGroup:hover
 {
   stroke: seagreen;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 
