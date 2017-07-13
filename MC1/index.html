@@ -146,15 +146,38 @@
 
 <div class="container-fluid">
     <div class = "row">
-       <center><div class="heatMapDiv col-md-12"> </div></center>
+        <center><h4> Vast Mini Challenge 1 </h4></center>
     </div>
 
-    <!--<div class = "row">
-        <div class="miniHeatMapDiv col-md-6"> </div>
-    </div>-->
+    <div class = "row">
+        <div class="heatMapTitles col-md-9">
+            <h4 style = "padding-left:20px;">Daily Heat Map</h4>
+            <h5 style = "padding-left:30px;">Order By:</h5>
+        </div>
+
+        <div class="miniHeatMapTitles col-md-3">
+            <right><h4>Hourly Heat Map</h4></right>
+        </div>
+        
+    </div>
 
     <div class = "row">
-          <div class = "miniHeatMapDiv col-md-4" style = "left:60px;"> </div>
+        <form action="">
+            <label><input type = "radio" name = "heatMapFilter" id = "busiestDaysCheckbox" style = "margin-left:45px;">Busiest Days</label>
+            <label><input type = "radio" name = "heatMapFilter" id = "busiestSensorsCheckbox" style = "margin-left:5px;">Busiest Sensors</label>
+            <label><input type = "radio" name = "heatMapFilter" id = "dayOfWeekCheckbox" style = "margin-left:5px;">Day of Week</label>
+          </form>
+        <left><div class="heatMapDiv col-md-9"> </div></left>
+        <right><div class = "miniHeatMapDiv col-md-3"> </div></right>
+    </div>
+
+    <div class = "row">
+        <div class="heatMapLegend col-md-6"> </div>
+        <div class="miniHeatMapLegend col-md-6"> </div>
+    </div>
+    
+    <div class = "row">
+          <!--<div class = "miniHeatMapDiv col-md-4"> </div>-->
           <div class="histogramDiv col-md-6"> 
             <label><input type = "checkbox" id = "gateEntriesCheckbox" value="">Gate Entries</label>
         </div>

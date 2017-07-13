@@ -87,6 +87,18 @@ p {
   background: white
 }
 
+.stop-left {
+                stop-color: #ffffb2;  /* Indigo */
+            }
+
+            .stop-right {
+                stop-color: #bd0026;  /* Teal */
+            }
+
+            .filled {
+                fill: url(#mainLegend);
+            }
+
 .bin:hover
 {
   stroke:blue;

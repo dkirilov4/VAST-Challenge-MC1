@@ -16,6 +16,7 @@ var DataLoader = function()
     var dailyData = [];     // Format: { Date, SensorData: {Gate, CarType[]} }
     
     var gateNames = [];
+    var orderedGateNames = [];
 
     var gateData = [];
 
@@ -30,11 +31,49 @@ var DataLoader = function()
 
     self.createVis = function()
     {
+        // var weekDayOrderedDailyData = [];
+        var weekDays = [0, 1, 2, 3, 4, 5, 6];
+        // console.log(weekDayOrderedDailyData)
+
+
+        dailyData.sort(function(a, b)
+        {
+            var formatDay = d3.timeFormat("%w");
+
+            var dateA = new Date(a.Date);
+            var dateB = new Date(b.Date);
+
+            var dayA = formatDay(dateA)
+            var dayB = formatDay(dateB)
+
+            if (dayA == 0)
+                dayA = 7;
+            if (dayB == 0)
+                dayB = 7;
+            
+            if (dayA == dayB)
+            {
+                if (dateA.getTime() < dateB.getTime())
+                    return -1;
+                else if (dateA.getTime() > dateB.getTime())
+                    return 1;
+            }
+
+            return dayA - dayB
+        })
+
+        for (var j = 0;j < dailyData.length;j++)
+        {
+            dailyData[j].DayWeek = j+1;
+        }
+
+        console.log(dailyData)
+
         self.createHeatMap();
+        // self.createHistogram();
+
         //self.createNodeMap();
         //self.createTreeMap();
-        self.createHistogram();
-        // self.createSecondHistogram();
     }
 
     //
@@ -81,7 +120,9 @@ var DataLoader = function()
     {
         console.log(">> Loading Data...");
 
-        gateNames = [ "entrance0", "entrance1", "entrance2" , "entrance3" , "entrance4" , "general-gate0" , "general-gate1" , "general-gate2" , "general-gate3" , "general-gate4" , "general-gate5" , "general-gate6" , "general-gate7" , "ranger-stop0" , "ranger-stop1" , "ranger-stop2" , "ranger-stop3" , "ranger-stop4" , "ranger-stop5" , "ranger-stop6" , "ranger-stop7" , "camping0" , "camping1" , "camping2" , "camping3" , "camping4" , "camping5" , "camping6" , "camping7" , "camping8" , "gate0" , "gate1" , "gate2" , "gate3" , "gate4" , "gate5" , "gate6" , "gate7" , "gate8" , "ranger-base" ];
+        gateNames = [ "entrance0", "entrance1", "entrance2" , "entrance3" , "entrance4" , "general-gate0", "general-gate1" , "general-gate2" , "general-gate3" , "general-gate4" , "general-gate5" , "general-gate6" , "general-gate7" , "ranger-stop0" , "ranger-stop1" , "ranger-stop2" , "ranger-stop3" , "ranger-stop4" , "ranger-stop5" , "ranger-stop6" , "ranger-stop7" , "camping0" , "camping1" , "camping2" , "camping3" , "camping4" , "camping5" , "camping6" , "camping7" , "camping8" , "gate0" , "gate1" , "gate2" , "gate3" , "gate4" , "gate5" , "gate6" , "gate7" , "gate8" , "ranger-base" ];
+        orderedGateNames = ["entrance3", "entrance2", "entrance4", "entrance0", "entrance1", "general-gate7", "general-gate2", "general-gate1", "general-gate4", "general-gate5", "general-gate6", "general-gate3", "general-gate0", "ranger-stop0", "ranger-stop2", "ranger-stop6", "ranger-stop3", "ranger-stop5", "ranger-stop7", "ranger-stop4", "ranger-stop1", "camping8", "camping5", "camping4", "camping6", "camping3", "camping2", "camping7", "camping0", "camping1", "gate8" , "gate5" , "gate3" , "gate6" , "gate4" , "gate7" , "gate2" , "gate1", "gate0", "ranger-base"];
+        console.log(orderedGateNames)
 
         d3.csv(file).row(function(d)
         {
@@ -125,6 +166,18 @@ var DataLoader = function()
         return emptyGates;
     }
 
+    var createOrderedEmptyGatesArray = function()
+    {
+        var emptyGates = [];
+        
+        for (var i = 0; i < orderedGateNames.length; i++)
+            emptyGates.push({Gate: orderedGateNames[i], CarTypes: [], CarIDs: [], Timestamps: createEmptyTimestampsArray(), NumReadings: 0})
+
+        return emptyGates;
+    }
+
+    
+
     // Processes all the raw data into a format organized by day
     self.loadDailyData = function()
     {
@@ -140,7 +193,8 @@ var DataLoader = function()
             // Push first element of Raw Data
             if (dailyData.length == 0) {
                 var emptyGates = createEmptyGatesArray();
-                dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates });
+                var orderedEmptyGates = createOrderedEmptyGatesArray();
+                dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates, OrderedSensorData: orderedEmptyGates });
                 dateExists = true;
             }
 
@@ -157,15 +211,26 @@ var DataLoader = function()
                             var formatHour = d3.timeFormat("%H");
                             var hour = parseInt(formatHour(new Date(rawData[i].Timestamp)));
 
-                            // if (dailyData[j].SensorData[k].Timestamps[hour] == "undefined")
-                            //     dailyData[j].SensorData[k].Timestamps[hour] = 0;
-
                             dailyData[j].SensorData[k].Timestamps[hour]++;
 
                             dailyData[j].SensorData[k].CarIDs.push(rawData[i].CarID);
                             dailyData[j].SensorData[k].CarTypes.push(rawData[i].CarType);
-                            // dailyData[j].SensorData[k].Timestamps.push(hour)
                             dailyData[j].SensorData[k].NumReadings++;
+                        }
+                    }
+
+                    for (var k = 0; k < dailyData[j].OrderedSensorData.length; k++)
+                    {
+                        if (dailyData[j].OrderedSensorData[k].Gate == rawData[i].GateName)
+                        {
+                            var formatHour = d3.timeFormat("%H");
+                            var hour = parseInt(formatHour(new Date(rawData[i].Timestamp)));
+
+                            dailyData[j].OrderedSensorData[k].Timestamps[hour]++;
+
+                            dailyData[j].OrderedSensorData[k].CarIDs.push(rawData[i].CarID);
+                            dailyData[j].OrderedSensorData[k].CarTypes.push(rawData[i].CarType);
+                            dailyData[j].OrderedSensorData[k].NumReadings++;
                         }
                     }
                     // Since we have found the corresponding day, break so we don't keep looping
@@ -179,11 +244,27 @@ var DataLoader = function()
             {
                 curDay++;
                 var emptyGates = createEmptyGatesArray();
-                dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates });
+                var orderedEmptyGates = createOrderedEmptyGatesArray();
+                dailyData.push({ Date: curDate, Day: curDay, SensorData: emptyGates, OrderedSensorData: orderedEmptyGates });
             }
 
             dateExists = false;
         }
+
+
+        dailyData.forEach(function (element) {
+        var count = 0;
+        for(var i = 0; i < 40; i++)
+        {
+            count +=  element.SensorData[i].NumReadings;}
+            // console.log(count);
+            element.TotalDay = count;
+        });
+
+        dailyData.sort(function(a, b){return b.TotalDay - a.TotalDay});
+
+        for (var j = 0;j < dailyData.length;j++)
+        dailyData[j].DayBusy = j+1;
     }
 
     self.loadGateData = function()

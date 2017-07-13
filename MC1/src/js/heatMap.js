@@ -13,8 +13,9 @@ var HeatMap = function()
     // Data Containers:
     var rawData = [];
     var dailyData = [];
-    var gateData = [];
-
+    var gateData = ["entrance3", "entrance2", "entrance4", "entrance0", "entrance1", "", "general-gate7", "general-gate2", "general-gate1", "general-gate4", "general-gate5", "general-gate6", "general-gate3", "general-gate0", "", "ranger-stop0", "ranger-stop2", "ranger-stop6", "ranger-stop3", "ranger-stop5", "ranger-stop7", "ranger-stop4", "ranger-stop1", "", "camping8", "camping5", "camping4", "camping6", "camping3", "camping2", "camping7", "camping0", "camping1","", "gate8" , "gate5" , "gate3" , "gate6" , "gate4" , "gate7" , "gate2" , "gate1", "gate0","", "ranger-base"];
+    var orderedGateData = ["entrance3", "entrance2", "entrance4", "entrance0", "entrance1", "", "general-gate7", "general-gate2", "general-gate1", "general-gate4", "general-gate5", "general-gate6", "general-gate3", "general-gate0", "", "ranger-stop0", "ranger-stop2", "ranger-stop6", "ranger-stop3", "ranger-stop5", "ranger-stop7", "ranger-stop4", "ranger-stop1", "", "camping8", "camping5", "camping4", "camping6", "camping3", "camping2", "camping7", "camping0", "camping1","", "gate8" , "gate5" , "gate3" , "gate6" , "gate4" , "gate7" , "gate2" , "gate1", "gate0","", "ranger-base"];
+    var busiestGates = [];
 
     //
     /* Heatmap: */
@@ -24,21 +25,31 @@ var HeatMap = function()
     var numRows = 396;      // Number of Days
     var numCols = 40;       // Number of Gates
 
-    var cellSize = 3;
-    var miniCellSize = 12;
+    var cellSize = 2.5;
+    var miniCellSize = 10;
 
     var colorScale;
 
     // SVG Properties:
+    var heatMap;
+
     var svgContainer;
     var zoomedSvgContainer;
-    var heatMap;
-    var rowLabels; 
-    var colLabels;
 
     var gContainer;
     var zoomedGContainer;
+
+    var rowLabels; 
+    var colLabels;
     var miniColLabels;
+
+    var mainLegend;
+    var miniLegend;
+
+    var minEntries;
+    var maxEntries;
+    var miniMinEntries;
+    var miniMaxEntries;
 
     var margin = { top: 40, right: 20, bottom: 40, left: 20 };
     
@@ -98,26 +109,27 @@ var HeatMap = function()
 
     var getBinColor = function(d)
     {
+        var minEntries = getMinEntries();
+        var maxEntries = getMaxEntries();
+
+        colorScale = d3.scaleLinear()
+                .domain([minEntries, maxEntries * (1/8), maxEntries * (2/8), maxEntries * (3/8), maxEntries * (4/8), maxEntries * (5/8), maxEntries * (6/8), maxEntries * (7/8), maxEntries])
+                .range(["#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d"]);
+
         if (d.NumReadings == 0)
-            return "white"
+            return "lightgrey"
         else
             return colorScale(d.NumReadings);
     }
 
-    self.createHeatMap = function()
+    self.createSVGs = function()
     {
-        console.log(">> Creating Heat Map...");
-
-        var minEntries = getMinEntries();
-        var maxEntries = getMaxEntries();
-
-        // colorScale = d3.scaleLinear()
-        //         .domain([minEntries, maxEntries * (1/3), maxEntries * (2/3), maxEntries])
-        //         .range(["#9cffaa", "#00ff0d", "#fbff14", "#cf0000"]);
+        minEntries = getMinEntries();
+        maxEntries = getMaxEntries();
 
         colorScale = d3.scaleLinear()
-                .domain([minEntries, maxEntries * (1/4), maxEntries * (2/4), maxEntries * (3/4), maxEntries])
-                .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
+                .domain([minEntries, maxEntries * (1/8), maxEntries * (2/8), maxEntries * (3/8), maxEntries * (4/8), maxEntries * (5/8), maxEntries * (6/8), maxEntries * (7/8), maxEntries])
+                .range(["#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d"]);
 
         svgContainer = d3.select(".heatMapDiv").append("svg")
                                 .attr("width", width)
@@ -135,20 +147,56 @@ var HeatMap = function()
         zoomedGContainer = zoomedSvgContainer.append("g")
                                 .attr("class", "miniHeatMap")
                                 .attr("transform", "translate(" + 0 + "," + margin.top + ")");
+    }
+
+    self.createHeatMap = function()
+    {
+        console.log(">> Creating Heat Map...");
+
+        var minEntries = getMinEntries();
+        var maxEntries = getMaxEntries();
 
         heatMap = gContainer.selectAll(".dayGroup")
                             .data(dailyData).enter()
                             .append("g")
                             .attr("class", "dayGroup")
-                            .attr("transform", function(d) {return "translate(" + cellSize * d.Day + ", 0)"})
+                            .attr("transform", function(d) 
+                            {
+                                var isBusiestDaysChecked = document.getElementById("busiestDaysCheckbox").checked
+                                var isDayOfWeekChecked = document.getElementById("dayOfWeekCheckbox").checked
+
+                                if (isBusiestDaysChecked)
+                                    return "translate(" + cellSize * d.DayBusy + ", 0)"
+                                else if (isDayOfWeekChecked)
+                                    return "translate(" + cellSize * d.DayWeek + ", 0)"
+                                else
+                                    return "translate(" + cellSize * d.Day + ", 0)"
+                            })
                             .each(function(d)
                             {
                                 d3.select(this).selectAll(".bin")
-                                    .data(d.SensorData)
+                                    .data(function() {
+                                        var checked = document.getElementById("busiestSensorsCheckbox").checked
+
+                                        if (checked)
+                                            return d.OrderedSensorData;
+                                        else
+                                            return d.SensorData;
+                                    })
                                     .enter()
                                     .append("rect")
                                     .attr("class", "bin")
-                                    .attr("transform", function(d) {return "translate(0, " + gateData.indexOf(d.Gate) * cellSize + ")"})
+                                    .attr("transform", function(d) 
+                                    {
+                                        var checked = document.getElementById("busiestSensorsCheckbox").checked
+
+                                        if (checked)
+                                            return "translate(0, " + orderedGateData.indexOf(d.Gate) * cellSize + ")"
+                                        else {
+                                            //console.log(gateData.indexOf(d.Gate));
+                                            return "translate(0, " + gateData.indexOf(d.Gate) * cellSize + ")"
+                                        }
+                                    })
                                     .attr("width", cellSize)
                                     .attr("height", cellSize)
                                     .attr("fill", function(d) { return getBinColor(d) })
@@ -230,31 +278,39 @@ var HeatMap = function()
         var minEntries = Infinity;
         var maxEntries = 0;
 
+        var numDays = dailyData.length;
         var numGates = dayData.SensorData.length;
         var timeSteps = 24;
 
-        for (var i = 0; i < numGates; i++)
+        for (var i = 0; i < dailyData.length; i++)
         {
-            for (var j = 0; j < timeSteps; j++)
+            for (var j = 0; j < numGates; j++)
             {
-                var curValue = dayData.SensorData[i].Timestamps[j];
+                for (var k = 0; k < timeSteps; k++)
+                {
+                    var curValue = dailyData[i].SensorData[j].Timestamps[k];
 
-                if (curValue < minEntries)
-                    minEntries = curValue;
-
-                if (curValue > maxEntries)
-                    maxEntries = curValue;
+                    if (curValue < minEntries)
+                        minEntries = curValue;
+                    if (curValue > maxEntries)
+                        maxEntries = curValue;
+                }
             }
         }
 
-        console.log(dayData);
+        miniMinEntries = minEntries;
+        miniMaxEntries = maxEntries;
+
+        console.log("MIN: " + minEntries);
+        console.log("MAX: " + maxEntries);
 
         colorScale = d3.scaleLinear()
-                .domain([minEntries, maxEntries * (1/4), maxEntries * (2/4), maxEntries * (3/4), maxEntries])
-                .range(["#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026"]);
+                .domain([minEntries, maxEntries * (1/8), maxEntries * (2/8), maxEntries * (3/8), maxEntries * (4/8), maxEntries * (5/8), maxEntries * (6/8), maxEntries * (7/8), maxEntries])
+                .range(["#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d"]);
 
         heatMap = zoomedGContainer.selectAll(".hourGroup")
-                            .data(dayData.SensorData).enter()
+                            .data(dayData.SensorData)
+                            .enter()
                             .append("g")
                             .attr("class", "hourGroup")
                             .attr("transform", function(d, i) {return "translate(0, " + i * miniCellSize + ")"})
@@ -291,50 +347,177 @@ var HeatMap = function()
                                 .attr("y", function(d, i) { return (i * miniCellSize) + miniCellSize})
                                 .attr("fill", "white")
                                 .attr("font-size", "10px")
-
-        // var zoom = d3.zoom()
-        //     .scaleExtent([1, 50])
-        //     .on("zoom", function()
-        //     {
-        //         console.log("Zooming / Panning")
-
-        //         var width = document.getElementsByClassName("miniHeatMapDiv")[0].clientWidth;
-        //         var height = document.getElementsByClassName("miniHeatMapDiv")[0].clientHeight;
-                
-        //         var tx = Math.min(0, Math.max(d3.event.transform.x, width - width * d3.event.transform.k));
-        //         var ty = Math.min(0, Math.max(d3.event.transform.y, height - height * d3.event.transform.k));
-
-        //         console.log("TX: " + tx)
-        //         console.log("TY: " + ty)
-
-        //         // gContainer.attr('transform', 'translate(' + tx + margin.right + ',' + ty + margin.top + ') scale(' + d3.event.transform.k + ')');
-        //         zoomedGContainer.attr("transform", d3.event.transform);
-        //     })
-
-        // zoomedGContainer.call(zoom)
-
         console.log("Done");
+    }
 
-        // heatMap = gContainer.selectAll(".dayGroup")
-        //                     .data(dayData).enter()
-        //                     .append("g")
-        //                     .attr("class", "hourGroup")
-        //                     .attr("transform", function(d) {return "translate(" + cellSize * d.Day + ", 0)"})
-        //                     .each(function(d)
-        //                     {
-        //                         d3.select(this).selectAll(".bin")
-        //                             .data(d.SensorData)
-        //                             .enter()
-        //                             .append("rect")
-        //                             .attr("class", "bin")
-        //                             .attr("transform", function(d) {return "translate(0, " + gateData.indexOf(d.Gate) * cellSize + ")"})
-        //                             .attr("width", cellSize)
-        //                             .attr("height", cellSize)
-        //                             .attr("fill", function(d) { return getBinColor(d) })
-        //                             .append("title")
-        //                             .text(function(x) { return "Date: " + d.Date + "\nLocation: " + x.Gate + "\nEntries: " + x.NumReadings});
-        //                     })
+    self.createMainLegend = function()
+    {
+        var legendSVGContainer;
+        var legendGContainer;
+        var legendLabelGContainer;
 
+        legendSVGContainer = d3.select(".heatMapDiv").insert("heatMapDiv", ":first-child").append("svg")                            
+                            .attr("width", miniCellSize * 40)
+                            .attr("height", miniCellSize * 4)
+                            .attr("transform", "translate(" + 590 + "," + 0 + ")")
+
+        legendGContainer = legendSVGContainer.append("g")
+                                .attr("width", miniCellSize * 40)
+                                .attr("height", miniCellSize)
+                                .attr("transform", "translate(" + 0 + "," + miniCellSize * 3 + ")")
+        
+        legendLabelGContainer = legendSVGContainer.append("g")
+                                .attr("width", miniCellSize * 40)
+                                .attr("height", miniCellSize * 3)
+
+        var defs = legendGContainer.append("defs");
+
+        var mainLinearGradient = defs.append("linearGradient")
+                                    .attr("id", "mainHeatMapLegendGradient")
+
+        mainLinearGradient
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "0%")
+
+        mainLinearGradient.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "lightgrey")
+
+        mainLinearGradient.append("stop")
+                .attr("offset", "10%")
+                .attr("stop-color", "lightgrey")
+
+        mainLinearGradient.append("stop")
+                .attr("offset", "10%")
+                .attr("stop-color", "#fff5f0")
+
+        mainLinearGradient.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "#67000d")
+
+        legendGContainer.append('rect')
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", miniCellSize * 40)
+                .attr("height", miniCellSize)
+                .style("fill", "url(#mainHeatMapLegendGradient)");
+
+        var upperBoundText = legendLabelGContainer.append("text")
+                                .text("0")
+                                .attr("transform", "translate(" + 0 + "," + miniCellSize * 2 + ")")
+                                .attr("font-size", "12px")
+                                .attr("fill", "white")
+
+        var lowerBoundText = legendLabelGContainer.append("text")
+                                .text("1")
+                                .attr("transform", "translate(" + miniCellSize * 4 + "," + miniCellSize * 2 + ")")
+                                .attr("font-size", "12px")
+                                .attr("fill", "white")
+
+        var zeroBoundText = legendLabelGContainer.append("text")
+                                .text(function() { return maxEntries})
+                                .attr("transform", "translate(" + miniCellSize * 38 + "," + miniCellSize * 2 + ")")
+                                .attr("font-size", "12px")
+                                .attr("fill", "white")
+    }
+
+    document.getElementById("busiestSensorsCheckbox").addEventListener("change", filterHeatmap, false);
+    document.getElementById("busiestDaysCheckbox").addEventListener("change", filterHeatmap, false);
+    document.getElementById("dayOfWeekCheckbox").addEventListener("change", filterHeatmap, false);
+    function filterHeatmap()
+    {
+        var checked = document.getElementById("busiestSensorsCheckbox").checked;
+
+        // heatMap.remove();
+        d3.selectAll(".dayGroup").remove();
+        self.createHeatMap(); 
+    }
+
+    //
+    self.createMiniLegend = function()
+    {
+        var legendSVGContainer;
+        var legendGContainer;
+        var legendLabelGContainer;
+
+        legendSVGContainer = d3.select(".miniHeatMapDiv").append("svg")                            
+                            .attr("width", miniCellSize * 4)
+                            .attr("height", miniCellSize * 40)
+                            .attr("transform", "translate(" + miniCellSize * 3 + "," + miniCellSize * -4 + ")")
+
+        legendGContainer = legendSVGContainer.append("g")
+                                .attr("width", miniCellSize)
+                                .attr("height", miniCellSize * 40)
+        
+        legendLabelGContainer = legendSVGContainer.append("g")
+                                .attr("width", miniCellSize*3)
+                                .attr("height", miniCellSize * 40)
+
+        var defs = legendGContainer.append("defs");
+
+        var linearGradient = defs.append("linearGradient")
+                                    .attr("id", "heatMapLegendGradient")
+
+        linearGradient
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "0%")
+                .attr("y2", "100%")
+
+        linearGradient.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "#67000d")
+
+        linearGradient.append("stop")
+                .attr("offset", "90%")
+                .attr("stop-color", "#fff5f0")
+
+        linearGradient.append("stop")
+                .attr("offset", "90%")
+                .attr("stop-color", "lightgrey")
+
+        linearGradient.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "lightgrey")
+
+        legendGContainer.append('rect')
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", miniCellSize)
+                .attr("height", miniCellSize * 40)
+                .style("fill", "url(#heatMapLegendGradient)");
+
+        var upperBoundText = legendLabelGContainer.append("text")
+                                .text(function() { return miniMaxEntries})
+                                .attr("transform", "translate(" + miniCellSize * 1.5 + "," + miniCellSize + ")")
+                                .attr("font-size", "12px")
+                                .attr("fill", "white")
+
+        var lowerBoundText = legendLabelGContainer.append("text")
+                                .text("1")
+                                .attr("transform", "translate(" + miniCellSize * 1.5 + "," + miniCellSize * 36 + ")")
+                                .attr("font-size", "12px")
+                                .attr("fill", "white")
+
+        var zeroBoundText = legendLabelGContainer.append("text")
+                                .text("0")
+                                .attr("transform", "translate(" + miniCellSize * 1.5 + "," + miniCellSize * 40 + ")")
+                                .attr("font-size", "12px")
+                                .attr("fill", "white")
+    }
+
+    document.getElementById("busiestSensorsCheckbox").addEventListener("change", filterHeatmap, false);
+    document.getElementById("busiestDaysCheckbox").addEventListener("change", filterHeatmap, false);
+    document.getElementById("dayOfWeekCheckbox").addEventListener("change", filterHeatmap, false);
+    function filterHeatmap()
+    {
+        var checked = document.getElementById("busiestSensorsCheckbox").checked;
+
+        // heatMap.remove();
+        d3.selectAll(".dayGroup").remove();
+        self.createHeatMap(); 
     }
 
 
@@ -347,10 +530,17 @@ var HeatMap = function()
         {
             rawData = rData;
             dailyData = dData;
-            gateData = gData;
+            // gateData = gData;
+            // gateData = [ "entrance0", "entrance1", "entrance2" , "entrance3" , "entrance4" ,"", "general-gate0", "general-gate1" , "general-gate2" , "general-gate3" , "general-gate4" , "general-gate5" , "general-gate6" , "general-gate7" ,"", "ranger-stop0" , "ranger-stop1" , "ranger-stop2" , "ranger-stop3" , "ranger-stop4" , "ranger-stop5" , "ranger-stop6" , "ranger-stop7" ,"", "camping0" , "camping1" , "camping2" , "camping3" , "camping4" , "camping5" , "camping6" , "camping7" , "camping8" ,"", "gate0" , "gate1" , "gate2" , "gate3" , "gate4" , "gate5" , "gate6" , "gate7" , "gate8" ,"", "ranger-base" ];
 
+
+            // self.loadFilters();
+            self.createSVGs();
             self.createHeatMap();
-            createZoomedHeatMap(dailyData[100])
+            createZoomedHeatMap(dailyData[120])
+            self.createMainLegend();
+            self.createMiniLegend();
+            
         },
     };
 

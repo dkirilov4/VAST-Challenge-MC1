@@ -315,13 +315,6 @@ var NodeMap = function ()
                         {
                             return (carTypes[i] + ": " + d);
                         });
-
-        console.log("HI")
-        d3.selectAll(".bar")
-            .on("mouseover", function(d)
-            {
-                console.log("H")
-            })
                     
     }
 
